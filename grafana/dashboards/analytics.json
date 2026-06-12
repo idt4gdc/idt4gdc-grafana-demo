@@ -1,0 +1,875 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 7000
+              },
+              {
+                "color": "red",
+                "value": 9500
+              }
+            ]
+          },
+          "unit": "watt",
+          "custom": {
+            "displayMode": "basic"
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "operatorName": "lastNotNull",
+        "minValue": 0,
+        "maxValue": 11000,
+        "showValue": true,
+        "showTitle": false,
+        "showTickLabels": true,
+        "formatTickLabelsWithUnit": false,
+        "animateNeedleValueTransition": true,
+        "animateNeedleValueTransitionSpeed": 900,
+        "allowNeedleCrossLimits": false,
+        "needleWidth": 6,
+        "markerEndEnabled": true,
+        "markerEndShape": "circle",
+        "markerStartEnabled": false,
+        "showThresholdBandOnGauge": true,
+        "showThresholdBandLowerRange": true,
+        "showThresholdBandMiddleRange": true,
+        "showThresholdBandUpperRange": true,
+        "showThresholdStateOnBackground": false,
+        "showThresholdStateOnValue": true,
+        "showThresholdStateOnTitle": false,
+        "zeroTickAngle": 60,
+        "maxTickAngle": 300,
+        "zeroNeedleAngle": 40,
+        "maxNeedleAngle": 320,
+        "tickSpacingMajor": 2000,
+        "tickSpacingMinor": 500,
+        "gaugeRadius": 0,
+        "padding": 0.05,
+        "edgeWidth": 0.05,
+        "pivotRadius": 0.1,
+        "tickEdgeGap": 0.05,
+        "tickLengthMaj": 0.15,
+        "tickLengthMin": 0.05,
+        "tickWidthMajor": 5,
+        "tickWidthMinor": 1,
+        "needleTickGap": 0.05,
+        "needleLengthNeg": 0,
+        "outerEdgeColor": "#3a4655",
+        "innerColor": "#1f2430",
+        "pivotColor": "#b8bfcc",
+        "needleColor": "#f4f7fb",
+        "tickLabelColor": "#c9d1dd",
+        "tickMajorColor": "#7f8da3",
+        "tickMinorColor": "#526174",
+        "valueFont": "Roboto",
+        "valueFontSize": "70",
+        "tickFont": "Roboto",
+        "tickLabelFontSize": "18",
+        "titleFont": "Roboto",
+        "titleFontSize": "20"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT NOW() AS time, ROUND(COALESCE(SUM(l.power_w), 0)::NUMERIC, 1) AS value\n            FROM latest_asset_metrics l\n            JOIN assets a USING (asset_id)\n            WHERE (${room:raw} = 'All' OR a.room_name = ${room:raw})\nAND (${rack:raw} = 'All' OR a.rack_name = ${rack:raw})\nAND (${server:raw} = 'All' OR a.asset_name = ${server:raw})",
+          "refId": "A"
+        }
+      ],
+      "title": "Current Draw",
+      "type": "briangann-gauge-panel"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 8000
+              },
+              {
+                "color": "red",
+                "value": 10000
+              }
+            ]
+          },
+          "unit": "watt",
+          "custom": {
+            "displayMode": "basic"
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "operatorName": "lastNotNull",
+        "minValue": 0,
+        "maxValue": 11000,
+        "showValue": true,
+        "showTitle": false,
+        "showTickLabels": true,
+        "formatTickLabelsWithUnit": false,
+        "animateNeedleValueTransition": true,
+        "animateNeedleValueTransitionSpeed": 900,
+        "allowNeedleCrossLimits": false,
+        "needleWidth": 6,
+        "markerEndEnabled": true,
+        "markerEndShape": "circle",
+        "markerStartEnabled": false,
+        "showThresholdBandOnGauge": true,
+        "showThresholdBandLowerRange": true,
+        "showThresholdBandMiddleRange": true,
+        "showThresholdBandUpperRange": true,
+        "showThresholdStateOnBackground": false,
+        "showThresholdStateOnValue": true,
+        "showThresholdStateOnTitle": false,
+        "zeroTickAngle": 60,
+        "maxTickAngle": 300,
+        "zeroNeedleAngle": 40,
+        "maxNeedleAngle": 320,
+        "tickSpacingMajor": 2000,
+        "tickSpacingMinor": 500,
+        "gaugeRadius": 0,
+        "padding": 0.05,
+        "edgeWidth": 0.05,
+        "pivotRadius": 0.1,
+        "tickEdgeGap": 0.05,
+        "tickLengthMaj": 0.15,
+        "tickLengthMin": 0.05,
+        "tickWidthMajor": 5,
+        "tickWidthMinor": 1,
+        "needleTickGap": 0.05,
+        "needleLengthNeg": 0,
+        "outerEdgeColor": "#3a4655",
+        "innerColor": "#1f2430",
+        "pivotColor": "#b8bfcc",
+        "needleColor": "#f4f7fb",
+        "tickLabelColor": "#c9d1dd",
+        "tickMajorColor": "#7f8da3",
+        "tickMinorColor": "#526174",
+        "valueFont": "Roboto",
+        "valueFontSize": "70",
+        "tickFont": "Roboto",
+        "tickLabelFontSize": "18",
+        "titleFont": "Roboto",
+        "titleFontSize": "20"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH scoped AS (\n              SELECT tm.ts, tm.power_w\n              FROM telemetry_metrics tm\n              JOIN assets a USING (asset_id)\n              WHERE tm.ts >= NOW() - INTERVAL '30 minutes'\n                AND (${room:raw} = 'All' OR a.room_name = ${room:raw})\nAND (${rack:raw} = 'All' OR a.rack_name = ${rack:raw})\nAND (${server:raw} = 'All' OR a.asset_name = ${server:raw})\n            ),\n            windows AS (\n              SELECT\n                AVG(power_w) FILTER (WHERE ts >= NOW() - INTERVAL '15 minutes') AS current_avg,\n                AVG(power_w) FILTER (\n                  WHERE ts >= NOW() - INTERVAL '30 minutes'\n                    AND ts < NOW() - INTERVAL '15 minutes'\n                ) AS previous_avg\n              FROM scoped\n            )\n            SELECT\n              NOW() AS time,\n              ROUND(COALESCE(current_avg + (current_avg - previous_avg), current_avg, 0)::NUMERIC, 1) AS value\n            FROM windows",
+          "refId": "A"
+        }
+      ],
+      "title": "15m Forecast",
+      "type": "briangann-gauge-panel"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 34
+              },
+              {
+                "color": "red",
+                "value": 36
+              }
+            ]
+          },
+          "unit": "celsius",
+          "custom": {
+            "displayMode": "basic"
+          },
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "operatorName": "lastNotNull",
+        "minValue": 20,
+        "maxValue": 42,
+        "showValue": true,
+        "showTitle": false,
+        "showTickLabels": true,
+        "formatTickLabelsWithUnit": false,
+        "animateNeedleValueTransition": true,
+        "animateNeedleValueTransitionSpeed": 900,
+        "allowNeedleCrossLimits": false,
+        "needleWidth": 6,
+        "markerEndEnabled": true,
+        "markerEndShape": "circle",
+        "markerStartEnabled": false,
+        "showThresholdBandOnGauge": true,
+        "showThresholdBandLowerRange": true,
+        "showThresholdBandMiddleRange": true,
+        "showThresholdBandUpperRange": true,
+        "showThresholdStateOnBackground": false,
+        "showThresholdStateOnValue": true,
+        "showThresholdStateOnTitle": false,
+        "zeroTickAngle": 60,
+        "maxTickAngle": 300,
+        "zeroNeedleAngle": 40,
+        "maxNeedleAngle": 320,
+        "tickSpacingMajor": 5,
+        "tickSpacingMinor": 1,
+        "gaugeRadius": 0,
+        "padding": 0.05,
+        "edgeWidth": 0.05,
+        "pivotRadius": 0.1,
+        "tickEdgeGap": 0.05,
+        "tickLengthMaj": 0.15,
+        "tickLengthMin": 0.05,
+        "tickWidthMajor": 5,
+        "tickWidthMinor": 1,
+        "needleTickGap": 0.05,
+        "needleLengthNeg": 0,
+        "outerEdgeColor": "#3a4655",
+        "innerColor": "#1f2430",
+        "pivotColor": "#b8bfcc",
+        "needleColor": "#f4f7fb",
+        "tickLabelColor": "#c9d1dd",
+        "tickMajorColor": "#7f8da3",
+        "tickMinorColor": "#526174",
+        "valueFont": "Roboto",
+        "valueFontSize": "70",
+        "tickFont": "Roboto",
+        "tickLabelFontSize": "18",
+        "titleFont": "Roboto",
+        "titleFontSize": "20"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT NOW() AS time, ROUND(COALESCE(MAX(l.outlet_temp_c), 0)::NUMERIC, 1) AS value\n            FROM latest_asset_metrics l\n            JOIN assets a USING (asset_id)\n            WHERE (${room:raw} = 'All' OR a.room_name = ${room:raw})\nAND (${rack:raw} = 'All' OR a.rack_name = ${rack:raw})\nAND (${server:raw} = 'All' OR a.asset_name = ${server:raw})",
+          "refId": "A"
+        }
+      ],
+      "title": "Peak Outlet Temp",
+      "type": "briangann-gauge-panel"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 3
+              },
+              {
+                "color": "red",
+                "value": 8
+              }
+            ]
+          },
+          "unit": "none",
+          "custom": {
+            "displayMode": "basic"
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "operatorName": "lastNotNull",
+        "minValue": 0,
+        "maxValue": 12,
+        "showValue": true,
+        "showTitle": false,
+        "showTickLabels": true,
+        "formatTickLabelsWithUnit": false,
+        "animateNeedleValueTransition": true,
+        "animateNeedleValueTransitionSpeed": 900,
+        "allowNeedleCrossLimits": false,
+        "needleWidth": 6,
+        "markerEndEnabled": true,
+        "markerEndShape": "circle",
+        "markerStartEnabled": false,
+        "showThresholdBandOnGauge": true,
+        "showThresholdBandLowerRange": true,
+        "showThresholdBandMiddleRange": true,
+        "showThresholdBandUpperRange": true,
+        "showThresholdStateOnBackground": false,
+        "showThresholdStateOnValue": true,
+        "showThresholdStateOnTitle": false,
+        "zeroTickAngle": 60,
+        "maxTickAngle": 300,
+        "zeroNeedleAngle": 40,
+        "maxNeedleAngle": 320,
+        "tickSpacingMajor": 2,
+        "tickSpacingMinor": 1,
+        "gaugeRadius": 0,
+        "padding": 0.05,
+        "edgeWidth": 0.05,
+        "pivotRadius": 0.1,
+        "tickEdgeGap": 0.05,
+        "tickLengthMaj": 0.15,
+        "tickLengthMin": 0.05,
+        "tickWidthMajor": 5,
+        "tickWidthMinor": 1,
+        "needleTickGap": 0.05,
+        "needleLengthNeg": 0,
+        "outerEdgeColor": "#3a4655",
+        "innerColor": "#1f2430",
+        "pivotColor": "#b8bfcc",
+        "needleColor": "#f4f7fb",
+        "tickLabelColor": "#c9d1dd",
+        "tickMajorColor": "#7f8da3",
+        "tickMinorColor": "#526174",
+        "valueFont": "Roboto",
+        "valueFontSize": "70",
+        "tickFont": "Roboto",
+        "tickLabelFontSize": "18",
+        "titleFont": "Roboto",
+        "titleFontSize": "20"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  NOW() AS time,\n  ROUND(\n    COALESCE(\n      SUM(\n        CASE severity\n          WHEN 'critical' THEN 2\n          ELSE 1\n        END\n      ),\n      0\n    )::NUMERIC,\n    0\n  ) AS value\nFROM active_alerts\nWHERE (${room:raw} = 'All' OR room_name = ${room:raw})\n  AND (${rack:raw} = 'All' OR rack_name = ${rack:raw})\n  AND (${server:raw} = 'All' OR asset_name = ${server:raw})",
+          "refId": "A"
+        }
+      ],
+      "title": "Alert Pressure",
+      "type": "briangann-gauge-panel"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 12,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "watt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 7
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n              $__timeGroupAlias(tm.ts, '5m'),\n              'Observed Power' AS metric,\n              ROUND(SUM(tm.power_w)::NUMERIC, 1) AS value\n            FROM telemetry_metrics tm\n            JOIN assets a USING (asset_id)\n            WHERE $__timeFilter(tm.ts) AND (${room:raw} = 'All' OR a.room_name = ${room:raw})\nAND (${rack:raw} = 'All' OR a.rack_name = ${rack:raw})\nAND (${server:raw} = 'All' OR a.asset_name = ${server:raw})\n            GROUP BY 1\n            ORDER BY 1",
+          "refId": "A"
+        }
+      ],
+      "title": "Power and Forecast Context",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 12,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 7
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n              bucket AS time,\n              metric,\n              value\n            FROM (\n              SELECT\n                $__timeGroup(tm.ts, '5m') AS bucket,\n                'CPU %' AS metric,\n                ROUND(AVG(tm.cpu_usage)::NUMERIC, 1) AS value\n              FROM telemetry_metrics tm\n              JOIN assets a USING (asset_id)\n              WHERE $__timeFilter(tm.ts) AND (${room:raw} = 'All' OR a.room_name = ${room:raw})\nAND (${rack:raw} = 'All' OR a.rack_name = ${rack:raw})\nAND (${server:raw} = 'All' OR a.asset_name = ${server:raw})\n              GROUP BY 1\n              UNION ALL\n              SELECT\n                $__timeGroup(tm.ts, '5m') AS bucket,\n                'Outlet Temp' AS metric,\n                ROUND(AVG(tm.outlet_temp_c)::NUMERIC, 1) AS value\n              FROM telemetry_metrics tm\n              JOIN assets a USING (asset_id)\n              WHERE $__timeFilter(tm.ts) AND (${room:raw} = 'All' OR a.room_name = ${room:raw})\nAND (${rack:raw} = 'All' OR a.rack_name = ${rack:raw})\nAND (${server:raw} = 'All' OR a.asset_name = ${server:raw})\n              GROUP BY 1\n            ) s\n            ORDER BY 1, 2",
+          "refId": "A"
+        }
+      ],
+      "title": "CPU and Thermal Drift",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 75
+              },
+              {
+                "color": "red",
+                "value": 95
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 15
+      },
+      "id": 7,
+      "options": {
+        "displayMode": "basic",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  a.rack_name AS metric,\n  ROUND(AVG(l.cpu_usage) + AVG(l.outlet_temp_c) - 20, 1) AS value\nFROM latest_asset_metrics l\nJOIN assets a USING (asset_id)\nWHERE (${room:raw} = 'All' OR a.room_name = ${room:raw})\n  AND (${rack:raw} = 'All' OR a.rack_name = ${rack:raw})\nGROUP BY a.rack_name\nORDER BY value DESC",
+          "refId": "A"
+        }
+      ],
+      "title": "Rack Stress Score",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 15
+      },
+      "id": 8,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n              a.asset_name AS \"Server\",\n              a.room_name AS \"Room\",\n              a.rack_name AS \"Rack\",\n              ROUND(l.outlet_temp_c::NUMERIC, 1) AS \"Outlet C\",\n              ROUND(l.cpu_usage::NUMERIC, 1) AS \"CPU %\",\n              l.status_level AS \"Status\"\n            FROM latest_asset_metrics l\n            JOIN assets a USING (asset_id)\n            WHERE (${room:raw} = 'All' OR a.room_name = ${room:raw})\nAND (${rack:raw} = 'All' OR a.rack_name = ${rack:raw})\nAND (${server:raw} = 'All' OR a.asset_name = ${server:raw})\n            ORDER BY l.outlet_temp_c DESC\n            LIMIT 15",
+          "refId": "A"
+        }
+      ],
+      "title": "Hottest Servers",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 23
+      },
+      "id": 9,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n              a.asset_name AS \"Server\",\n              a.asset_type AS \"Type\",\n              a.rack_name AS \"Rack\",\n              ROUND(l.power_w::NUMERIC, 0) AS \"Power W\",\n              ROUND(l.cpu_usage::NUMERIC, 1) AS \"CPU %\",\n              ROUND(l.outlet_temp_c::NUMERIC, 1) AS \"Outlet C\",\n              l.operational_state AS \"State\"\n            FROM latest_asset_metrics l\n            JOIN assets a USING (asset_id)\n            WHERE (${room:raw} = 'All' OR a.room_name = ${room:raw})\nAND (${rack:raw} = 'All' OR a.rack_name = ${rack:raw})\nAND (${server:raw} = 'All' OR a.asset_name = ${server:raw})\n            ORDER BY l.power_w DESC\n            LIMIT 20",
+          "refId": "A"
+        }
+      ],
+      "title": "Top Power Servers",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 23
+      },
+      "id": 10,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  ts AS \"Last seen\",\n  asset_name AS \"Asset\",\n  severity AS \"Severity\",\n  rule_name AS \"Signal\",\n  message AS \"Message\"\nFROM active_alerts\nWHERE (${room:raw} = 'All' OR room_name = ${room:raw})\n  AND (${rack:raw} = 'All' OR rack_name = ${rack:raw})\n  AND (${server:raw} = 'All' OR asset_name = ${server:raw})\nORDER BY ts DESC, severity DESC\nLIMIT 20",
+          "refId": "A"
+        }
+      ],
+      "title": "Analytics Alert Feed",
+      "type": "table"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": [
+    "idt4gdc",
+    "demo",
+    "ops"
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "room",
+        "label": "Room",
+        "type": "query",
+        "datasource": {
+          "type": "postgres",
+          "uid": "postgres-ops"
+        },
+        "definition": "SELECT room_name AS __text, quote_literal(room_name) AS __value FROM rooms ORDER BY room_name",
+        "query": "SELECT room_name AS __text, quote_literal(room_name) AS __value FROM rooms ORDER BY room_name",
+        "includeAll": true,
+        "allValue": "'All'",
+        "multi": false,
+        "refresh": 2,
+        "sort": 1,
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "'All'"
+        }
+      },
+      {
+        "name": "rack",
+        "label": "Rack",
+        "type": "query",
+        "datasource": {
+          "type": "postgres",
+          "uid": "postgres-ops"
+        },
+        "definition": "SELECT rack_name AS __text, quote_literal(rack_name) AS __value\nFROM racks\nJOIN rooms USING (room_id)\nWHERE ${room:raw} = 'All' OR rooms.room_name = ${room:raw}\nORDER BY rack_name",
+        "query": "SELECT rack_name AS __text, quote_literal(rack_name) AS __value\nFROM racks\nJOIN rooms USING (room_id)\nWHERE ${room:raw} = 'All' OR rooms.room_name = ${room:raw}\nORDER BY rack_name",
+        "includeAll": true,
+        "allValue": "'All'",
+        "multi": false,
+        "refresh": 2,
+        "sort": 1,
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "'All'"
+        }
+      },
+      {
+        "name": "server",
+        "label": "Server",
+        "type": "query",
+        "datasource": {
+          "type": "postgres",
+          "uid": "postgres-ops"
+        },
+        "definition": "SELECT asset_name AS __text, quote_literal(asset_name) AS __value\nFROM assets\nWHERE (${room:raw} = 'All' OR room_name = ${room:raw})\n  AND (${rack:raw} = 'All' OR rack_name = ${rack:raw})\nORDER BY asset_name",
+        "query": "SELECT asset_name AS __text, quote_literal(asset_name) AS __value\nFROM assets\nWHERE (${room:raw} = 'All' OR room_name = ${room:raw})\n  AND (${rack:raw} = 'All' OR rack_name = ${rack:raw})\nORDER BY asset_name",
+        "includeAll": true,
+        "allValue": "'All'",
+        "multi": false,
+        "refresh": 2,
+        "sort": 1,
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "'All'"
+        }
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "iDT4GDC Analytics",
+  "uid": "idt4-analytics",
+  "version": 1,
+  "weekStart": ""
+}

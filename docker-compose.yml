@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: idt4gdc-postgres
+    environment:
+      POSTGRES_DB: opsdemo
+      POSTGRES_USER: grafana
+      POSTGRES_PASSWORD: grafana
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U grafana -d opsdemo"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+
+  simulator:
+    build:
+      context: ./simulator
+    container_name: idt4gdc-simulator
+    environment:
+      DATABASE_URL: postgresql://grafana:grafana@postgres:5432/opsdemo
+      SEED_HOURS: "24"
+      HISTORY_STEP_SECONDS: "300"
+      LIVE_INTERVAL_SECONDS: "10"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.0.0
+    container_name: idt4gdc-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_DEFAULT_THEME: dark
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/overview.json
+      GF_INSTALL_PLUGINS: briangann-gauge-panel
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
