@@ -31,9 +31,13 @@ It is designed to feel closer to a real control-room deployment than a custom ap
 - PostgreSQL acts as the telemetry store and query backend
 - A Python simulator generates pseudo-live room / rack / server telemetry
 - Provisioned dashboards expose:
+  - Connect Data Centre
   - Overview
   - Analytics
   - Carbon
+  - Sustainability KPIs
+  - AI Optimisation
+  - GPU-FPGA Acceleration
 
 The platform is intentionally demo-oriented:
 
@@ -58,13 +62,22 @@ idt4gdc-grafana-demo/
 ├── simulator/
 │   ├── Dockerfile
 │   ├── requirements.txt
-│   └── app.py
+│   ├── app.py
+│   └── data/
+│       ├── ai_model_results.json
+│       ├── data_centres.json
+│       ├── gpu_fpga_acceleration.json
+│       └── sustainability_kpis.json
 │
 ├── grafana/
 │   ├── dashboards/
+│   │   ├── connect_data_centre.json
 │   │   ├── overview.json
 │   │   ├── analytics.json
-│   │   └── carbon.json
+│   │   ├── carbon.json
+│   │   ├── sustainability_kpis.json
+│   │   ├── ai_optimisation.json
+│   │   └── gpu_fpga_acceleration.json
 │   └── provisioning/
 │       ├── datasources/
 │       │   └── postgres.yml
@@ -81,8 +94,17 @@ idt4gdc-grafana-demo/
   - schema, indexes, views, alert views
 - `simulator/app.py`
   - dimensions, asset topology, pseudo-live telemetry generation
+  - KPI snapshot generation
+  - AI and acceleration demo seeding
+- `simulator/data/*`
+  - sample data-centre profiles
+  - AI model benchmark data
+  - sustainability KPI definitions
+  - GPU / FPGA optimisation story data
 - `scripts/generate_dashboards.py`
   - Grafana dashboard JSON generation
+  - left-side demo navigation
+  - fake connection flow wiring
 - `grafana/provisioning/*`
   - datasource and dashboard bootstrapping
 
@@ -111,10 +133,13 @@ flowchart LR
   - seeds dimensions
   - backfills history
   - inserts live telemetry snapshots every 10 seconds
+  - derives sustainability KPI snapshots from telemetry
+  - seeds AI model comparison and GPU/FPGA optimisation scenario data
 - **Grafana**
   - serves dashboards
   - queries PostgreSQL directly
-  - applies room / rack / server filters
+  - applies data-centre and room / rack / server filters
+  - acts as the demo shell through provisioned dashboard navigation
 
 ### Compose configuration
 
@@ -231,6 +256,18 @@ Defined in [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/postgres/ini
 #### `active_alerts`
 - view-backed rule output for live dashboard alerts
 
+#### `sustainability_kpi_snapshots`
+- historical KPI series derived from simulated operational telemetry
+
+#### `ai_model_results`
+- model comparison metadata for the AI energy optimisation story
+
+#### `data_centre_sources`
+- fake but structured site connection profiles used by the Connect page
+
+#### `gpu_fpga_*`
+- hardware acceleration scenario tables for the fraud-detection story
+
 ### Why views are important
 
 The dashboards intentionally query views for current-state panels so that:
@@ -245,17 +282,32 @@ The dashboards intentionally query views for current-state panels so that:
 
 Dashboard generation is implemented in [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/scripts/generate_dashboards.py](/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/scripts/generate_dashboards.py).
 
-The generator produces three provisioned dashboards:
+The generator produces seven provisioned dashboards:
 
+- [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/connect_data_centre.json](/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/connect_data_centre.json)
 - [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/overview.json](/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/overview.json)
 - [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/analytics.json](/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/analytics.json)
 - [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/carbon.json](/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/carbon.json)
+- [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/sustainability_kpis.json](/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/sustainability_kpis.json)
+- [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/ai_optimisation.json](/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/ai_optimisation.json)
+- [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/gpu_fpga_acceleration.json](/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/gpu_fpga_acceleration.json)
+
+### Connect Data Centre dashboard
+
+Focus:
+
+- demo-friendly fake connection flow
+- selectable data-centre profiles
+- editable connection context fields
+- handoff into operational dashboards
+- left-side navigation across the whole demo
 
 ### Overview dashboard
 
 Focus:
 
 - current site status
+- connected site context
 - live KPI cards
 - trend lines
 - rack contribution
@@ -290,6 +342,35 @@ Focus:
 - asset-level carbon hotspots
 - sustainability-oriented operational view
 
+### Sustainability KPIs dashboard
+
+Focus:
+
+- D3.2-aligned sustainability metrics
+- current and historical KPI visibility
+- gauge-based efficiency interpretation
+- baseline versus current carbon comparison
+- advanced KPI section for demo storytelling
+
+### AI Optimisation dashboard
+
+Focus:
+
+- telemetry-driven power modelling story
+- model comparison across LSTM / Random Forest / XGBoost families
+- accuracy versus energy trade-off
+- predicted versus actual power comparison
+- feature importance and AI outcome summary
+
+### GPU-FPGA Acceleration dashboard
+
+Focus:
+
+- workload orchestration story for fraud detection
+- hardware platform comparison
+- scenario controls and operational phases
+- energy and latency improvement narrative
+
 ### Gauge implementation
 
 The repo uses the **D3 Gauge plugin** for needle-style panels:
@@ -304,11 +385,21 @@ This gives the Grafana demo a more instrument-like, NOC-style presentation than 
 
 ## 7. Filtering and Drill-Down Model
 
-The dashboards are driven by three Grafana variables:
+The dashboards are driven by a small set of Grafana variables:
+
+- `data_centre`
+- `site_location`
+- `site_ip`
+- `username`
 
 - `room`
 - `rack`
 - `server`
+
+Additional page-specific variables include:
+
+- `ai_model`
+- `scenario_phase`
 
 These are generated in [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/scripts/generate_dashboards.py](/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/scripts/generate_dashboards.py) and applied consistently across all dashboard SQL.
 
@@ -316,6 +407,7 @@ These are generated in [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/
 
 - `room` filters available racks
 - `rack` filters available servers
+- `data_centre` carries the selected site context across dashboards
 - all panel SQL applies the same filter logic
 - `All` is handled through quoted raw Grafana variables to avoid SQL templating issues
 
@@ -324,6 +416,7 @@ These are generated in [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/
 This repo deliberately supports:
 
 - site-wide operations view
+- fake site connection and context handoff
 - room-level drill-down
 - rack-level drill-down
 - server-level isolation
@@ -386,6 +479,10 @@ docker compose up -d --build
 - Password: `admin`
 - PostgreSQL: `localhost:5434`
 
+Recommended entry point:
+
+- [http://localhost:3000/d/idt4-connect/connect-data-centre?refresh=10s](http://localhost:3000/d/idt4-connect/connect-data-centre?refresh=10s)
+
 ### Stop the stack
 
 ```bash
@@ -414,6 +511,7 @@ On a fresh run:
 - dimensions are seeded
 - the simulator backfills the last 24 hours
 - Grafana provisions dashboards automatically
+- the default home dashboard is the Connect Data Centre page
 
 ### Refresh behavior
 
@@ -430,6 +528,7 @@ That is intentional because the objective is:
 - easy demos
 - controllable operational patterns
 - no dependency on external DCIM or telemetry systems
+- fake connection flow is UI-driven rather than truly stateful authentication
 
 ---
 
@@ -444,6 +543,7 @@ Grafana was chosen for this demo because it gives:
 - mature dashboard interactions
 - easy filtering and drilling
 - fast time-to-demo
+- enough flexibility to simulate a product journey without building a full custom frontend
 
 ### Why PostgreSQL instead of a TSDB
 
@@ -469,6 +569,7 @@ Pseudo-live simulation is preferred because it:
 - no real DCIM or BMS connection
 - no persisted Grafana user state between clean recreations
 - no custom rack-layout Digital Twin screen inside Grafana
+- the connection flow is simulated through dashboard variables and links, not a true backend session
 
 ---
 
@@ -509,5 +610,6 @@ This repository is best understood as a **self-contained, pseudo-live operations
 - the simulator provides realistic changing telemetry
 - Grafana provides the monitoring experience
 - dashboards provide current-state, analytic, and carbon visibility
+- AI and sustainability modules extend the story from monitoring into optimisation and KPI interpretation
 
 It is intentionally simple to run, easy to explain, and strong enough for stakeholder review, internal demos, and architecture discussions.
