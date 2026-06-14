@@ -1,0 +1,98 @@
+{
+  "profile_name": "d32_demo_profile",
+  "config": {
+    "facility_overhead_base": 1.26,
+    "facility_overhead_wave": 0.08,
+    "renewable_fraction_base": 0.46,
+    "renewable_fraction_wave": 0.18,
+    "reused_energy_fraction_base": 0.12,
+    "reused_energy_fraction_wave": 0.05,
+    "baseline_co2_multiplier": 1.24,
+    "performance_factor": 18.0,
+    "cue_it_energy_share": 0.91,
+    "hue_base": 0.72,
+    "she_base": 0.58,
+    "apcren_base": 0.55,
+    "dca_base": 0.57
+  },
+  "kpis": [
+    {
+      "key": "pue",
+      "label": "PUE",
+      "direction": "lower",
+      "interpretation": "Power Usage Effectiveness. Lower is better because less overhead energy is needed beyond the IT load.",
+      "is_advanced": false
+    },
+    {
+      "key": "ref",
+      "label": "REF",
+      "direction": "higher",
+      "interpretation": "Renewable Energy Factor. Higher is better because a larger share of demand is served from renewable energy.",
+      "is_advanced": false
+    },
+    {
+      "key": "erf",
+      "label": "ERF",
+      "direction": "higher",
+      "interpretation": "Energy Reuse Factor. Higher is better because more recoverable energy is reused instead of wasted.",
+      "is_advanced": false
+    },
+    {
+      "key": "cef",
+      "label": "CEF",
+      "direction": "lower",
+      "interpretation": "Carbon Emission Factor. Lower is better because each unit of energy carries less carbon intensity.",
+      "is_advanced": false
+    },
+    {
+      "key": "co2_savings_kg",
+      "label": "CO2 Savings",
+      "direction": "higher",
+      "interpretation": "CO2 Savings versus a baseline operating mode. Higher is better because more emissions are avoided.",
+      "is_advanced": false
+    },
+    {
+      "key": "ppw",
+      "label": "PPW",
+      "direction": "higher",
+      "interpretation": "Performance per Watt. Higher is better because more useful work is delivered per unit of power.",
+      "is_advanced": false
+    },
+    {
+      "key": "cue",
+      "label": "CUE",
+      "direction": "lower",
+      "interpretation": "Carbon Usage Effectiveness. Lower is better because less carbon is associated with the IT energy delivered.",
+      "is_advanced": false
+    },
+    {
+      "key": "hue",
+      "label": "HUE",
+      "direction": "higher",
+      "interpretation": "Heat Usage Effectiveness. Higher values indicate better productive use of recovered thermal output.",
+      "is_advanced": true
+    },
+    {
+      "key": "she",
+      "label": "SHE",
+      "direction": "higher",
+      "interpretation": "Sustainable Heat Exploitation. Higher values indicate stronger sustainable use of available heat streams.",
+      "is_advanced": true
+    },
+    {
+      "key": "apcren",
+      "label": "APCren",
+      "direction": "higher",
+      "interpretation": "Adaptability Power Curve for Renewable Energy. Higher values indicate better renewable-aware operating flexibility.",
+      "is_advanced": true
+    },
+    {
+      "key": "dca",
+      "label": "DCA",
+      "direction": "higher",
+      "interpretation": "Data Centre Adaptability. Higher values indicate better operational adaptability under sustainability constraints.",
+      "is_advanced": true
+    }
+  ],
+  "outcome_statement": "D3.2 sustainability KPIs connect operational telemetry, carbon intensity, renewable energy availability, and efficiency metrics into a single decision-support view for greener data-centre management."
+}

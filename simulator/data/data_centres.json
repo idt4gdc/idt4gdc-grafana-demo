@@ -1,0 +1,60 @@
+{
+  "data_centres": [
+    {
+      "key": "turkey-dc",
+      "name": "Turkey Data Centre",
+      "location": "Istanbul, Turkey",
+      "ip_address": "10.40.18.21",
+      "source_type": "OpenDCIM Gateway",
+      "default_username": "ops_tr",
+      "default_password": "demo-pass",
+      "jwt_status": "Valid",
+      "stream_status": "Reading metrics",
+      "display_order": 1,
+      "user_visible": true,
+      "user_added": false
+    },
+    {
+      "key": "uk-dc",
+      "name": "UK Data Centre",
+      "location": "Manchester, United Kingdom",
+      "ip_address": "10.80.24.12",
+      "source_type": "Prometheus Bridge",
+      "default_username": "ops_uk",
+      "default_password": "demo-pass",
+      "jwt_status": "Valid",
+      "stream_status": "Reading metrics",
+      "display_order": 2,
+      "user_visible": true,
+      "user_added": false
+    },
+    {
+      "key": "demo-local-dc",
+      "name": "Demo Local Data Centre",
+      "location": "Local Simulation",
+      "ip_address": "127.0.0.1",
+      "source_type": "Local Telemetry Stream",
+      "default_username": "bitnet",
+      "default_password": "datatwin",
+      "jwt_status": "Valid",
+      "stream_status": "Reading metrics",
+      "display_order": 3,
+      "user_visible": true,
+      "user_added": false
+    },
+    {
+      "key": "ankara-edge-lab",
+      "name": "Ankara Edge Lab",
+      "location": "Ankara, Turkey",
+      "ip_address": "10.52.10.55",
+      "source_type": "MQTT Edge Collector",
+      "default_username": "edge_ops",
+      "default_password": "demo-pass",
+      "jwt_status": "Valid",
+      "stream_status": "Reading metrics",
+      "display_order": 4,
+      "user_visible": false,
+      "user_added": true
+    }
+  ]
+}

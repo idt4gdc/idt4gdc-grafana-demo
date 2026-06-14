@@ -1,0 +1,57 @@
+{
+  "workload": {
+    "name": "Credit Card Fraud Detection",
+    "model": "XGBoost",
+    "goal": "Energy-efficient fraud detection using heterogeneous acceleration",
+    "hardware_backends": ["CPU", "GPU", "FPGA"]
+  },
+  "platforms": [
+    {
+      "platform": "CPU",
+      "role": "Baseline execution and orchestration fallback",
+      "training_latency_ms": 4.49,
+      "inference_latency_ms": 1.72,
+      "speedup_training": 1.0,
+      "speedup_inference": 1.0,
+      "performance_per_watt": 1.0,
+      "power_w": 420,
+      "throughput": 420
+    },
+    {
+      "platform": "GPU",
+      "role": "XGBoost training / model building",
+      "training_latency_ms": 2.89,
+      "inference_latency_ms": 1.68,
+      "speedup_training": 1.54,
+      "speedup_inference": 1.02,
+      "performance_per_watt": 1.2,
+      "power_w": 360,
+      "throughput": 432
+    },
+    {
+      "platform": "FPGA",
+      "role": "Low-latency real-time inference / fraud scoring",
+      "training_latency_ms": 1.92,
+      "inference_latency_ms": 0.06,
+      "speedup_training": 2.3,
+      "speedup_inference": 27.5,
+      "performance_per_watt": 4.5,
+      "power_w": 110,
+      "throughput": 495
+    }
+  ],
+  "scenario": {
+    "baseline_platform": "CPU",
+    "training_platform": "GPU",
+    "inference_platform": "FPGA",
+    "baseline_energy_j": 2.62,
+    "optimised_energy_j": 1.57,
+    "baseline_co2_kg": 0.00105,
+    "optimised_co2_kg": 0.00063,
+    "energy_saving_percent": 40.08,
+    "throughput_improvement_percent": 17.86,
+    "fpga_inference_speedup": 27.5,
+    "fpga_perf_per_watt": 4.5,
+    "gpu_training_acceleration": 1.54
+  }
+}

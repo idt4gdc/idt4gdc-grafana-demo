@@ -1,0 +1,1643 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "gridPos": {
+        "h": 60,
+        "w": 4,
+        "x": 0,
+        "y": 0
+      },
+      "id": 23,
+      "options": {
+        "content": "<div style=\"display:flex; flex-direction:column; height:100%; padding:6px 4px;\">\n  <div style=\"font-size:24px; font-weight:800; color:#f3f6fb; letter-spacing:0.01em; margin-bottom:4px;\">iDT4GDC</div>\n  <div style=\"font-size:12px; text-transform:uppercase; letter-spacing:0.16em; color:#8aa1c7; margin-bottom:14px;\">Demo Navigation</div>\n  <a href=\"/d/idt4-connect/connect-data-centre?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Connect Data Centre</a><a href=\"/d/idt4-overview/idt4gdc-overview?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Overview</a><a href=\"/d/idt4-analytics/idt4gdc-analytics?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Analytics</a><a href=\"/d/idt4-carbon/idt4gdc-carbon?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Carbon</a><div style=\"padding:10px 12px; margin:6px 0; border-radius:10px; background:#1f2937; color:#ffffff; font-weight:700;\">Sustainability KPIs</div><a href=\"/d/idt4-ai-optimisation/ai-optimisation?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">AI Optimisation</a><a href=\"/d/idt4-gpu-fpga/gpu-fpga-acceleration?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">GPU\u2013FPGA Acceleration</a>\n  <div style=\"margin-top:auto; padding-top:16px; color:#93a1b5; font-size:12px; line-height:1.5;\">\n    Use the top selectors to set the active site and the Grafana time picker to change the analysis window.\n  </div>\n</div>",
+        "mode": "html"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 20,
+        "x": 4,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "content": "## Sustainability KPIs\n\nThis dashboard translates D3.2 sustainability indicators into a demo-friendly operations view. It connects energy, carbon, renewable availability, and efficiency KPIs back to the simulated data-centre telemetry stream.\n\n**Outcome**\n\nD3.2 sustainability KPIs connect operational telemetry, carbon intensity, renewable energy availability, and efficiency metrics into a single decision-support view for greener data-centre management.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "Sustainability KPIs",
+      "transparent": false,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1.35
+              },
+              {
+                "color": "red",
+                "value": 1.55
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 4,
+        "y": 4
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT NOW() AS time, ROUND(pue::NUMERIC, 3) AS value\nFROM latest_sustainability_snapshot",
+          "refId": "A"
+        }
+      ],
+      "title": "PUE",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.35
+              },
+              {
+                "color": "green",
+                "value": 0.55
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 7,
+        "y": 4
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT NOW() AS time, ROUND(ref::NUMERIC, 3) AS value\nFROM latest_sustainability_snapshot",
+          "refId": "A"
+        }
+      ],
+      "title": "REF",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.1
+              },
+              {
+                "color": "green",
+                "value": 0.2
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 11,
+        "y": 4
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT NOW() AS time, ROUND(erf::NUMERIC, 3) AS value\nFROM latest_sustainability_snapshot",
+          "refId": "A"
+        }
+      ],
+      "title": "ERF",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.32
+              },
+              {
+                "color": "red",
+                "value": 0.4
+              }
+            ]
+          },
+          "unit": "suffix:kg/kWh"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 14,
+        "y": 4
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT NOW() AS time, ROUND(cef::NUMERIC, 3) AS value\nFROM latest_sustainability_snapshot",
+          "refId": "A"
+        }
+      ],
+      "title": "CEF",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.3
+              },
+              {
+                "color": "green",
+                "value": 0.6
+              }
+            ]
+          },
+          "unit": "suffix:kg CO2e"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 17,
+        "y": 4
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT NOW() AS time, ROUND(co2_savings_kg::NUMERIC, 3) AS value\nFROM latest_sustainability_snapshot",
+          "refId": "A"
+        }
+      ],
+      "title": "CO2 Savings",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1.6
+              },
+              {
+                "color": "green",
+                "value": 2.2
+              }
+            ]
+          },
+          "unit": "suffix: perf/W"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 21,
+        "y": 4
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT NOW() AS time, ROUND(ppw::NUMERIC, 3) AS value\nFROM latest_sustainability_snapshot",
+          "refId": "A"
+        }
+      ],
+      "title": "PPW",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1.35
+              },
+              {
+                "color": "red",
+                "value": 1.55
+              }
+            ]
+          },
+          "unit": "none",
+          "custom": {
+            "displayMode": "basic"
+          },
+          "decimals": 3
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 4,
+        "y": 8
+      },
+      "id": 8,
+      "options": {
+        "operatorName": "lastNotNull",
+        "minValue": 1.0,
+        "maxValue": 1.8,
+        "showValue": true,
+        "showTitle": false,
+        "showTickLabels": true,
+        "formatTickLabelsWithUnit": false,
+        "animateNeedleValueTransition": true,
+        "animateNeedleValueTransitionSpeed": 900,
+        "allowNeedleCrossLimits": false,
+        "needleWidth": 6,
+        "markerEndEnabled": true,
+        "markerEndShape": "circle",
+        "markerStartEnabled": false,
+        "showThresholdBandOnGauge": true,
+        "showThresholdBandLowerRange": true,
+        "showThresholdBandMiddleRange": true,
+        "showThresholdBandUpperRange": true,
+        "showThresholdStateOnBackground": false,
+        "showThresholdStateOnValue": true,
+        "showThresholdStateOnTitle": false,
+        "zeroTickAngle": 60,
+        "maxTickAngle": 300,
+        "zeroNeedleAngle": 40,
+        "maxNeedleAngle": 320,
+        "tickSpacingMajor": 0.1,
+        "tickSpacingMinor": 0.05,
+        "gaugeRadius": 0,
+        "padding": 0.05,
+        "edgeWidth": 0.05,
+        "pivotRadius": 0.1,
+        "tickEdgeGap": 0.05,
+        "tickLengthMaj": 0.15,
+        "tickLengthMin": 0.05,
+        "tickWidthMajor": 5,
+        "tickWidthMinor": 1,
+        "needleTickGap": 0.05,
+        "needleLengthNeg": 0,
+        "outerEdgeColor": "#3a4655",
+        "innerColor": "#1f2430",
+        "pivotColor": "#b8bfcc",
+        "needleColor": "#f4f7fb",
+        "tickLabelColor": "#c9d1dd",
+        "tickMajorColor": "#7f8da3",
+        "tickMinorColor": "#526174",
+        "valueFont": "Roboto",
+        "valueFontSize": "70",
+        "tickFont": "Roboto",
+        "tickLabelFontSize": "18",
+        "titleFont": "Roboto",
+        "titleFontSize": "20"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT NOW() AS time, ROUND(pue::NUMERIC, 3) AS value\nFROM latest_sustainability_snapshot",
+          "refId": "A"
+        }
+      ],
+      "title": "PUE",
+      "type": "briangann-gauge-panel"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.35
+              },
+              {
+                "color": "green",
+                "value": 0.55
+              }
+            ]
+          },
+          "unit": "percentunit",
+          "custom": {
+            "displayMode": "basic"
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 9,
+        "y": 8
+      },
+      "id": 9,
+      "options": {
+        "operatorName": "lastNotNull",
+        "minValue": 0,
+        "maxValue": 1,
+        "showValue": true,
+        "showTitle": false,
+        "showTickLabels": true,
+        "formatTickLabelsWithUnit": false,
+        "animateNeedleValueTransition": true,
+        "animateNeedleValueTransitionSpeed": 900,
+        "allowNeedleCrossLimits": false,
+        "needleWidth": 6,
+        "markerEndEnabled": true,
+        "markerEndShape": "circle",
+        "markerStartEnabled": false,
+        "showThresholdBandOnGauge": true,
+        "showThresholdBandLowerRange": true,
+        "showThresholdBandMiddleRange": true,
+        "showThresholdBandUpperRange": true,
+        "showThresholdStateOnBackground": false,
+        "showThresholdStateOnValue": true,
+        "showThresholdStateOnTitle": false,
+        "zeroTickAngle": 60,
+        "maxTickAngle": 300,
+        "zeroNeedleAngle": 40,
+        "maxNeedleAngle": 320,
+        "tickSpacingMajor": 0.1,
+        "tickSpacingMinor": 0.05,
+        "gaugeRadius": 0,
+        "padding": 0.05,
+        "edgeWidth": 0.05,
+        "pivotRadius": 0.1,
+        "tickEdgeGap": 0.05,
+        "tickLengthMaj": 0.15,
+        "tickLengthMin": 0.05,
+        "tickWidthMajor": 5,
+        "tickWidthMinor": 1,
+        "needleTickGap": 0.05,
+        "needleLengthNeg": 0,
+        "outerEdgeColor": "#3a4655",
+        "innerColor": "#1f2430",
+        "pivotColor": "#b8bfcc",
+        "needleColor": "#f4f7fb",
+        "tickLabelColor": "#c9d1dd",
+        "tickMajorColor": "#7f8da3",
+        "tickMinorColor": "#526174",
+        "valueFont": "Roboto",
+        "valueFontSize": "70",
+        "tickFont": "Roboto",
+        "tickLabelFontSize": "18",
+        "titleFont": "Roboto",
+        "titleFontSize": "20"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT NOW() AS time, ROUND(ref::NUMERIC, 3) AS value\nFROM latest_sustainability_snapshot",
+          "refId": "A"
+        }
+      ],
+      "title": "REF",
+      "type": "briangann-gauge-panel"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.42
+              },
+              {
+                "color": "red",
+                "value": 0.55
+              }
+            ]
+          },
+          "unit": "suffix:kg/kWh",
+          "custom": {
+            "displayMode": "basic"
+          },
+          "decimals": 3
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 14,
+        "y": 8
+      },
+      "id": 10,
+      "options": {
+        "operatorName": "lastNotNull",
+        "minValue": 0.2,
+        "maxValue": 0.8,
+        "showValue": true,
+        "showTitle": false,
+        "showTickLabels": true,
+        "formatTickLabelsWithUnit": false,
+        "animateNeedleValueTransition": true,
+        "animateNeedleValueTransitionSpeed": 900,
+        "allowNeedleCrossLimits": false,
+        "needleWidth": 6,
+        "markerEndEnabled": true,
+        "markerEndShape": "circle",
+        "markerStartEnabled": false,
+        "showThresholdBandOnGauge": true,
+        "showThresholdBandLowerRange": true,
+        "showThresholdBandMiddleRange": true,
+        "showThresholdBandUpperRange": true,
+        "showThresholdStateOnBackground": false,
+        "showThresholdStateOnValue": true,
+        "showThresholdStateOnTitle": false,
+        "zeroTickAngle": 60,
+        "maxTickAngle": 300,
+        "zeroNeedleAngle": 40,
+        "maxNeedleAngle": 320,
+        "tickSpacingMajor": 0.1,
+        "tickSpacingMinor": 0.05,
+        "gaugeRadius": 0,
+        "padding": 0.05,
+        "edgeWidth": 0.05,
+        "pivotRadius": 0.1,
+        "tickEdgeGap": 0.05,
+        "tickLengthMaj": 0.15,
+        "tickLengthMin": 0.05,
+        "tickWidthMajor": 5,
+        "tickWidthMinor": 1,
+        "needleTickGap": 0.05,
+        "needleLengthNeg": 0,
+        "outerEdgeColor": "#3a4655",
+        "innerColor": "#1f2430",
+        "pivotColor": "#b8bfcc",
+        "needleColor": "#f4f7fb",
+        "tickLabelColor": "#c9d1dd",
+        "tickMajorColor": "#7f8da3",
+        "tickMinorColor": "#526174",
+        "valueFont": "Roboto",
+        "valueFontSize": "70",
+        "tickFont": "Roboto",
+        "tickLabelFontSize": "18",
+        "titleFont": "Roboto",
+        "titleFontSize": "20"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT NOW() AS time, ROUND(cue::NUMERIC, 3) AS value\nFROM latest_sustainability_snapshot",
+          "refId": "A"
+        }
+      ],
+      "title": "CUE",
+      "type": "briangann-gauge-panel"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1.6
+              },
+              {
+                "color": "green",
+                "value": 2.2
+              }
+            ]
+          },
+          "unit": "suffix: perf/W",
+          "custom": {
+            "displayMode": "basic"
+          },
+          "decimals": 3
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 19,
+        "y": 8
+      },
+      "id": 11,
+      "options": {
+        "operatorName": "lastNotNull",
+        "minValue": 0.5,
+        "maxValue": 3.5,
+        "showValue": true,
+        "showTitle": false,
+        "showTickLabels": true,
+        "formatTickLabelsWithUnit": false,
+        "animateNeedleValueTransition": true,
+        "animateNeedleValueTransitionSpeed": 900,
+        "allowNeedleCrossLimits": false,
+        "needleWidth": 6,
+        "markerEndEnabled": true,
+        "markerEndShape": "circle",
+        "markerStartEnabled": false,
+        "showThresholdBandOnGauge": true,
+        "showThresholdBandLowerRange": true,
+        "showThresholdBandMiddleRange": true,
+        "showThresholdBandUpperRange": true,
+        "showThresholdStateOnBackground": false,
+        "showThresholdStateOnValue": true,
+        "showThresholdStateOnTitle": false,
+        "zeroTickAngle": 60,
+        "maxTickAngle": 300,
+        "zeroNeedleAngle": 40,
+        "maxNeedleAngle": 320,
+        "tickSpacingMajor": 2,
+        "tickSpacingMinor": 1,
+        "gaugeRadius": 0,
+        "padding": 0.05,
+        "edgeWidth": 0.05,
+        "pivotRadius": 0.1,
+        "tickEdgeGap": 0.05,
+        "tickLengthMaj": 0.15,
+        "tickLengthMin": 0.05,
+        "tickWidthMajor": 5,
+        "tickWidthMinor": 1,
+        "needleTickGap": 0.05,
+        "needleLengthNeg": 0,
+        "outerEdgeColor": "#3a4655",
+        "innerColor": "#1f2430",
+        "pivotColor": "#b8bfcc",
+        "needleColor": "#f4f7fb",
+        "tickLabelColor": "#c9d1dd",
+        "tickMajorColor": "#7f8da3",
+        "tickMinorColor": "#526174",
+        "valueFont": "Roboto",
+        "valueFontSize": "70",
+        "tickFont": "Roboto",
+        "tickLabelFontSize": "18",
+        "titleFont": "Roboto",
+        "titleFontSize": "20"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT NOW() AS time, ROUND(ppw::NUMERIC, 3) AS value\nFROM latest_sustainability_snapshot",
+          "refId": "A"
+        }
+      ],
+      "title": "PPW",
+      "type": "briangann-gauge-panel"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 12,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 4,
+        "y": 15
+      },
+      "id": 12,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  $__timeGroupAlias(ts, '5m'),\n  'PUE' AS metric,\n  ROUND(AVG(pue)::NUMERIC, 3) AS value\nFROM sustainability_kpi_snapshots\nWHERE $__timeFilter(ts)\nGROUP BY 1\nORDER BY 1",
+          "refId": "A"
+        }
+      ],
+      "title": "PUE Trend",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 12,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "suffix:kg CO2e"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 14,
+        "y": 15
+      },
+      "id": 13,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  $__timeGroupAlias(ts, '5m'),\n  'CO2 Emissions' AS metric,\n  ROUND(AVG(total_co2_kg)::NUMERIC, 3) AS value\nFROM sustainability_kpi_snapshots\nWHERE $__timeFilter(ts)\nGROUP BY 1\nORDER BY 1",
+          "refId": "A"
+        }
+      ],
+      "title": "CO2 Emissions Trend",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 12,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 4,
+        "y": 23
+      },
+      "id": 14,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  $__timeGroupAlias(ts, '5m'),\n  'REF' AS metric,\n  ROUND(AVG(ref)::NUMERIC, 3) AS value\nFROM sustainability_kpi_snapshots\nWHERE $__timeFilter(ts)\nGROUP BY 1\nORDER BY 1",
+          "refId": "A"
+        }
+      ],
+      "title": "REF Trend",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 12,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "suffix:kg CO2e"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 14,
+        "y": 23
+      },
+      "id": 15,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  $__timeGroupAlias(ts, '5m'),\n  'CO2 Savings' AS metric,\n  ROUND(AVG(co2_savings_kg)::NUMERIC, 3) AS value\nFROM sustainability_kpi_snapshots\nWHERE $__timeFilter(ts)\nGROUP BY 1\nORDER BY 1",
+          "refId": "A"
+        }
+      ],
+      "title": "CO2 Savings Trend",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 4,
+        "y": 31
+      },
+      "id": 16,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.8,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "vertical",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT metric, value\nFROM (\n  SELECT 'Baseline CO2' AS metric, ROUND(baseline_co2_kg::NUMERIC, 3) AS value\n  FROM latest_sustainability_snapshot\n  UNION ALL\n  SELECT 'Current CO2' AS metric, ROUND(total_co2_kg::NUMERIC, 3) AS value\n  FROM latest_sustainability_snapshot\n) s",
+          "refId": "A"
+        }
+      ],
+      "title": "Baseline vs Current CO2",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.55
+              },
+              {
+                "color": "green",
+                "value": 0.72
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 14,
+        "y": 31
+      },
+      "id": 17,
+      "options": {
+        "displayMode": "basic",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT metric, value\nFROM (\n  SELECT 'HUE' AS metric, ROUND(hue::NUMERIC, 3) AS value FROM latest_sustainability_snapshot\n  UNION ALL\n  SELECT 'SHE' AS metric, ROUND(she::NUMERIC, 3) AS value FROM latest_sustainability_snapshot\n  UNION ALL\n  SELECT 'APCren' AS metric, ROUND(apcren::NUMERIC, 3) AS value FROM latest_sustainability_snapshot\n  UNION ALL\n  SELECT 'DCA' AS metric, ROUND(dca::NUMERIC, 3) AS value FROM latest_sustainability_snapshot\n) advanced",
+          "refId": "A"
+        }
+      ],
+      "title": "Advanced KPI Section",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 20,
+        "x": 4,
+        "y": 39
+      },
+      "id": 18,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  label AS \"KPI\",\n  CASE\n    WHEN direction = 'higher' THEN 'Higher is better'\n    ELSE 'Lower is better'\n  END AS \"Target\",\n  interpretation AS \"Interpretation\"\nFROM sustainability_kpi_metadata\nORDER BY is_advanced, display_order",
+          "refId": "A"
+        }
+      ],
+      "title": "KPI Interpretation Guide",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 10,
+        "x": 4,
+        "y": 46
+      },
+      "id": 19,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  ts AS \"Timestamp\",\n  metric_name AS \"Metric\",\n  ROUND(metric_value::NUMERIC, 4) AS \"Value\"\nFROM sustainability_prom_metrics\nORDER BY metric_name",
+          "refId": "A"
+        }
+      ],
+      "title": "Mock Sustainability Metric Export",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 10,
+        "x": 14,
+        "y": 46
+      },
+      "id": 20,
+      "options": {
+        "content": "### Operational interpretation\n\n- **PUE / CUE / CEF** indicate how efficiently and cleanly the facility is operating.\n- **REF / ERF / CO2 Savings** indicate how strongly the site benefits from renewable supply and recoverable energy reuse.\n- **PPW** shows whether the platform is delivering more useful work per unit of power.\n- **HUE / SHE / APCren / DCA** provide a forward-looking sustainability layer that links thermal reuse and renewable-aware adaptability to day-to-day operations.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "Operational Interpretation",
+      "transparent": false,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.35
+              },
+              {
+                "color": "green",
+                "value": 0.65
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 4,
+        "y": 52
+      },
+      "id": 21,
+      "options": {
+        "displayMode": "basic",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT metric, value\nFROM (\n  SELECT 'Avg PUE' AS metric, ROUND(AVG(pue)::NUMERIC, 3) AS value FROM sustainability_kpi_snapshots WHERE $__timeFilter(ts)\n  UNION ALL\n  SELECT 'Avg REF', ROUND(AVG(ref)::NUMERIC, 3) FROM sustainability_kpi_snapshots WHERE $__timeFilter(ts)\n  UNION ALL\n  SELECT 'Avg ERF', ROUND(AVG(erf)::NUMERIC, 3) FROM sustainability_kpi_snapshots WHERE $__timeFilter(ts)\n  UNION ALL\n  SELECT 'Avg CUE', ROUND(AVG(cue)::NUMERIC, 3) FROM sustainability_kpi_snapshots WHERE $__timeFilter(ts)\n  UNION ALL\n  SELECT 'Avg CO2 savings', ROUND(AVG(co2_savings_kg)::NUMERIC, 3) FROM sustainability_kpi_snapshots WHERE $__timeFilter(ts)\n  UNION ALL\n  SELECT 'Avg PPW', ROUND(AVG(ppw)::NUMERIC, 3) FROM sustainability_kpi_snapshots WHERE $__timeFilter(ts)\n) averages",
+          "refId": "A"
+        }
+      ],
+      "title": "Average Metrics",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 14,
+        "y": 52
+      },
+      "id": 22,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  ROUND(AVG(pue)::NUMERIC, 3) AS \"Avg PUE\",\n  ROUND(AVG(ref)::NUMERIC, 3) AS \"Avg REF\",\n  ROUND(AVG(erf)::NUMERIC, 3) AS \"Avg ERF\",\n  ROUND(AVG(cue)::NUMERIC, 3) AS \"Avg CUE\",\n  ROUND(AVG(co2_savings_kg)::NUMERIC, 3) AS \"Avg CO2 savings\",\n  ROUND(AVG(ppw)::NUMERIC, 3) AS \"Avg PPW\",\n  ROUND(AVG(total_facility_power_w)::NUMERIC, 1) AS \"Avg power\",\n  ROUND(AVG(total_co2_kg)::NUMERIC, 3) AS \"Avg carbon\"\nFROM sustainability_kpi_snapshots\nWHERE $__timeFilter(ts)",
+          "refId": "A"
+        }
+      ],
+      "title": "Average Metrics Detail",
+      "type": "table"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": [
+    "idt4gdc",
+    "demo",
+    "ops"
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "data_centre",
+        "label": "Data Centre",
+        "type": "query",
+        "datasource": {
+          "type": "postgres",
+          "uid": "postgres-ops"
+        },
+        "definition": "SELECT dc_name AS __text, quote_literal(dc_name) AS __value FROM data_centre_sources WHERE user_visible = TRUE ORDER BY display_order, dc_name",
+        "query": "SELECT dc_name AS __text, quote_literal(dc_name) AS __value FROM data_centre_sources WHERE user_visible = TRUE ORDER BY display_order, dc_name",
+        "includeAll": false,
+        "multi": false,
+        "refresh": 2,
+        "sort": 1,
+        "current": {
+          "selected": true,
+          "text": "Demo Local Data Centre",
+          "value": "'Demo Local Data Centre'"
+        }
+      },
+      {
+        "name": "site_location",
+        "label": "Location",
+        "type": "textbox",
+        "query": "Local Simulation",
+        "current": {
+          "selected": true,
+          "text": "Local Simulation",
+          "value": "Local Simulation"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "Local Simulation",
+            "value": "Local Simulation"
+          }
+        ],
+        "hide": 2
+      },
+      {
+        "name": "site_ip",
+        "label": "IP Address",
+        "type": "textbox",
+        "query": "127.0.0.1",
+        "current": {
+          "selected": true,
+          "text": "127.0.0.1",
+          "value": "127.0.0.1"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "127.0.0.1",
+            "value": "127.0.0.1"
+          }
+        ],
+        "hide": 2
+      },
+      {
+        "name": "username",
+        "label": "Username",
+        "type": "textbox",
+        "query": "bitnet",
+        "current": {
+          "selected": true,
+          "text": "bitnet",
+          "value": "bitnet"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "bitnet",
+            "value": "bitnet"
+          }
+        ],
+        "hide": 2
+      }
+    ]
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Sustainability KPIs",
+  "uid": "idt4-sustainability-kpis",
+  "version": 1,
+  "weekStart": ""
+}

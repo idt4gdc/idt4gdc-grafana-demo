@@ -1,0 +1,1069 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "gridPos": {
+        "h": 41,
+        "w": 4,
+        "x": 0,
+        "y": 0
+      },
+      "id": 18,
+      "options": {
+        "content": "<div style=\"display:flex; flex-direction:column; height:100%; padding:6px 4px;\">\n  <div style=\"font-size:24px; font-weight:800; color:#f3f6fb; letter-spacing:0.01em; margin-bottom:4px;\">iDT4GDC</div>\n  <div style=\"font-size:12px; text-transform:uppercase; letter-spacing:0.16em; color:#8aa1c7; margin-bottom:14px;\">Demo Navigation</div>\n  <a href=\"/d/idt4-connect/connect-data-centre?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Connect Data Centre</a><a href=\"/d/idt4-overview/idt4gdc-overview?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Overview</a><a href=\"/d/idt4-analytics/idt4gdc-analytics?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Analytics</a><a href=\"/d/idt4-carbon/idt4gdc-carbon?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Carbon</a><a href=\"/d/idt4-sustainability-kpis/sustainability-kpis?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Sustainability KPIs</a><a href=\"/d/idt4-ai-optimisation/ai-optimisation?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">AI Optimisation</a><div style=\"padding:10px 12px; margin:6px 0; border-radius:10px; background:#1f2937; color:#ffffff; font-weight:700;\">GPU\u2013FPGA Acceleration</div>\n  <div style=\"margin-top:auto; padding-top:16px; color:#93a1b5; font-size:12px; line-height:1.5;\">\n    Use the top selectors to set the active site and the Grafana time picker to change the analysis window.\n  </div>\n</div>",
+        "mode": "html"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 7,
+        "x": 4,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "content": "### Workload Summary Card\n\n- **Workload:** Credit Card Fraud Detection\n- **Model:** XGBoost\n- **Goal:** Energy-efficient fraud detection using heterogeneous acceleration\n- **Hardware backends:** CPU, GPU, FPGA",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "Workload Summary",
+      "transparent": false,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 11,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "content": "<div style=\"display:flex; flex-direction:column; gap:10px;\">\n  <div style=\"padding:12px; border-radius:12px; background:#111827; border:1px solid #243244;\"><strong>CPU</strong> \u2192 Data handling / preprocessing</div>\n  <div style=\"padding:12px; border-radius:12px; background:#111827; border:1px solid #243244;\"><strong>GPU</strong> \u2192 XGBoost training / model building</div>\n  <div style=\"padding:12px; border-radius:12px; background:#111827; border:1px solid #243244;\"><strong>FPGA</strong> \u2192 Real-time inference / fraud scoring</div>\n  <div style=\"color:#c5cfdd; line-height:1.6; margin-top:4px;\">AI-based scheduler evaluates workload type, latency target, and energy budget, then places training on GPU and low-latency inference on FPGA.</div>\n</div>",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "AI Scheduler / Placement",
+      "transparent": false,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 7,
+        "x": 17,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "content": "### Simulation Controls\n\n                - **Current phase:** ${scenario_phase:text}\n                - **Connected profile:** ${data_centre:text}\n                - **Scenario flow:** CPU baseline \u2192 scheduler activation \u2192 GPU training \u2192 FPGA inference \u2192 optimised operation\n\n                <div style=\"display:flex; flex-wrap:wrap; gap:10px; margin-top:8px;\">\n  <a href=\"/d/idt4-gpu-fpga/gpu-fpga-acceleration?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}&var-scenario_phase=%27running%27\" style=\"display:inline-block; padding:10px 16px; border-radius:10px; background:#2563eb; color:#fff; text-decoration:none; font-weight:700;\">Start</a>\n  <a href=\"/d/idt4-gpu-fpga/gpu-fpga-acceleration?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}&var-scenario_phase=%27scheduler%27\" style=\"display:inline-block; padding:10px 16px; border-radius:10px; background:#475569; color:#fff; text-decoration:none; font-weight:700;\">Pause</a>\n  <a href=\"/d/idt4-gpu-fpga/gpu-fpga-acceleration?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}&var-scenario_phase=%27optimised%27\" style=\"display:inline-block; padding:10px 16px; border-radius:10px; background:#0f766e; color:#fff; text-decoration:none; font-weight:700;\">Fast Forward</a>\n  <a href=\"/d/idt4-gpu-fpga/gpu-fpga-acceleration?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}&var-scenario_phase=%27baseline%27\" style=\"display:inline-block; padding:10px 16px; border-radius:10px; background:#7c2d12; color:#fff; text-decoration:none; font-weight:700;\">Reset</a>\n</div>",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "Simulation Controls",
+      "transparent": false,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "suffix:x"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 4,
+        "y": 6
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT NOW() AS time, fpga_inference_speedup::NUMERIC AS value FROM gpu_fpga_scenario",
+          "refId": "A"
+        }
+      ],
+      "title": "FPGA Inference Speed-up",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "suffix:x baseline"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 9,
+        "y": 6
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT NOW() AS time, fpga_perf_per_watt::NUMERIC AS value FROM gpu_fpga_scenario",
+          "refId": "A"
+        }
+      ],
+      "title": "FPGA Performance / Watt",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 15
+              },
+              {
+                "color": "green",
+                "value": 30
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 14,
+        "y": 6
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT NOW() AS time, energy_saving_percent::NUMERIC AS value FROM gpu_fpga_scenario",
+          "refId": "A"
+        }
+      ],
+      "title": "Energy Saving",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "suffix:x"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 19,
+        "y": 6
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT NOW() AS time, gpu_training_acceleration::NUMERIC AS value FROM gpu_fpga_scenario",
+          "refId": "A"
+        }
+      ],
+      "title": "GPU Training Acceleration",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 7,
+        "x": 4,
+        "y": 10
+      },
+      "id": 8,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.8,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "vertical",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT platform AS \"Platform\", training_latency_ms AS \"Training latency (ms)\"\nFROM gpu_fpga_platform_metrics\nORDER BY training_latency_ms DESC",
+          "refId": "A"
+        }
+      ],
+      "title": "Training Latency",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 11,
+        "y": 10
+      },
+      "id": 9,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.8,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "vertical",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT platform AS \"Platform\", inference_latency_ms AS \"Inference latency (ms)\"\nFROM gpu_fpga_platform_metrics\nORDER BY inference_latency_ms DESC",
+          "refId": "A"
+        }
+      ],
+      "title": "Inference Latency",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 7,
+        "x": 17,
+        "y": 10
+      },
+      "id": 10,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.8,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "vertical",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT platform AS \"Platform\", performance_per_watt AS \"Performance per watt\"\nFROM gpu_fpga_platform_metrics\nORDER BY performance_per_watt DESC",
+          "refId": "A"
+        }
+      ],
+      "title": "Performance per Watt",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 7,
+        "x": 4,
+        "y": 18
+      },
+      "id": 11,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.8,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "vertical",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT metric, value\nFROM (\n  SELECT 'GPU training speed-up' AS metric, speedup_training AS value\n  FROM gpu_fpga_platform_metrics\n  WHERE platform = 'GPU'\n  UNION ALL\n  SELECT 'FPGA training speed-up', speedup_training\n  FROM gpu_fpga_platform_metrics\n  WHERE platform = 'FPGA'\n  UNION ALL\n  SELECT 'GPU inference speed-up', speedup_inference\n  FROM gpu_fpga_platform_metrics\n  WHERE platform = 'GPU'\n  UNION ALL\n  SELECT 'FPGA inference speed-up', speedup_inference\n  FROM gpu_fpga_platform_metrics\n  WHERE platform = 'FPGA'\n) speeds",
+          "refId": "A"
+        }
+      ],
+      "title": "Speed-up Comparison",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 11,
+        "y": 18
+      },
+      "id": 12,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.8,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "vertical",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT metric, value\nFROM (\n  SELECT 'Baseline energy' AS metric, baseline_energy_j AS value FROM gpu_fpga_scenario\n  UNION ALL\n  SELECT 'Optimised energy', optimised_energy_j FROM gpu_fpga_scenario\n) energy",
+          "refId": "A"
+        }
+      ],
+      "title": "Before vs After Energy Consumption",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 7,
+        "x": 17,
+        "y": 18
+      },
+      "id": 13,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.8,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "vertical",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT metric, value\nFROM (\n  SELECT 'Baseline CO2' AS metric, baseline_co2_kg AS value FROM gpu_fpga_scenario\n  UNION ALL\n  SELECT 'Optimised CO2', optimised_co2_kg FROM gpu_fpga_scenario\n) carbon",
+          "refId": "A"
+        }
+      ],
+      "title": "Before vs After CO2 Estimate",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 4,
+        "y": 26
+      },
+      "id": 14,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  platform AS \"Platform\",\n  role_description AS \"Role\",\n  training_latency_ms AS \"Training latency ms\",\n  inference_latency_ms AS \"Inference latency ms\",\n  speedup_training AS \"Training speed-up\",\n  speedup_inference AS \"Inference speed-up\",\n  performance_per_watt AS \"Performance per watt\"\nFROM gpu_fpga_platform_metrics\nORDER BY CASE platform WHEN 'CPU' THEN 1 WHEN 'GPU' THEN 2 ELSE 3 END",
+          "refId": "A"
+        }
+      ],
+      "title": "Platform Metrics",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 14,
+        "y": 26
+      },
+      "id": 15,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT step AS \"Step\", status AS \"Status\"\nFROM (\n  SELECT 1 AS sort_order, 'Transactions received' AS step,\n    CASE\n      WHEN ${scenario_phase:raw} IN ('running', 'scheduler', 'gpu_training', 'fpga_inference', 'optimised') THEN 'complete'\n      ELSE 'active'\n    END AS status\n  UNION ALL\n  SELECT 2, 'CPU baseline execution',\n    CASE\n      WHEN ${scenario_phase:raw} = 'baseline' THEN 'active'\n      WHEN ${scenario_phase:raw} IN ('running', 'scheduler', 'gpu_training', 'fpga_inference', 'optimised') THEN 'complete'\n      ELSE 'pending'\n    END\n  UNION ALL\n  SELECT 3, 'AI scheduler selects hardware',\n    CASE\n      WHEN ${scenario_phase:raw} = 'scheduler' THEN 'active'\n      WHEN ${scenario_phase:raw} IN ('gpu_training', 'fpga_inference', 'optimised') THEN 'complete'\n      ELSE 'pending'\n    END\n  UNION ALL\n  SELECT 4, 'GPU training starts',\n    CASE\n      WHEN ${scenario_phase:raw} = 'gpu_training' THEN 'active'\n      WHEN ${scenario_phase:raw} IN ('fpga_inference', 'optimised') THEN 'complete'\n      ELSE 'pending'\n    END\n  UNION ALL\n  SELECT 5, 'FPGA scoring starts',\n    CASE\n      WHEN ${scenario_phase:raw} = 'fpga_inference' THEN 'active'\n      WHEN ${scenario_phase:raw} = 'optimised' THEN 'complete'\n      ELSE 'pending'\n    END\n  UNION ALL\n  SELECT 6, 'Suspicious transactions flagged',\n    CASE\n      WHEN ${scenario_phase:raw} = 'optimised' THEN 'complete'\n      ELSE 'pending'\n    END\n  UNION ALL\n  SELECT 7, 'Energy / performance improvement displayed',\n    CASE\n      WHEN ${scenario_phase:raw} = 'optimised' THEN 'complete'\n      ELSE 'pending'\n    END\n) flow\nORDER BY sort_order",
+          "refId": "A"
+        }
+      ],
+      "title": "Fraud Detection Workload Demo",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 10,
+        "x": 4,
+        "y": 34
+      },
+      "id": 16,
+      "options": {
+        "content": "### Before / After Optimisation\n\n**Before AI Optimisation**\n\n- CPU-only baseline\n- higher latency\n- higher energy per useful computation\n\n**After AI Optimisation**\n\n- GPU-assisted training\n- FPGA-assisted inference\n- lower latency\n- improved performance per watt\n- reduced energy consumption\n\n**Formula notes**\n\n- Energy = Power \u00d7 Time\n- Improvement (%) = (Baseline Energy - Optimised Energy) / Baseline Energy \u00d7 100\n- Performance per Watt = Throughput / Power\n\n**Measured result**\n\n- Baseline energy: 2.62 J\n- Optimised energy: 1.57 J\n- Improvement: 40.08%",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "Before / After Optimisation",
+      "transparent": false,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 10,
+        "x": 14,
+        "y": 34
+      },
+      "id": 17,
+      "options": {
+        "content": "### Why GPU? Why FPGA?\n\n- **GPU** is selected for parallel model-building because it reduces training latency relative to the CPU baseline.\n- **FPGA** is selected for low-latency fraud scoring because it delivers the strongest inference speed-up and the highest performance per watt.\n- **CPU** remains in the loop for data preparation and orchestration.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "Why GPU? Why FPGA?",
+      "transparent": false,
+      "type": "text"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": [
+    "idt4gdc",
+    "demo",
+    "ops"
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "data_centre",
+        "label": "Data Centre",
+        "type": "query",
+        "datasource": {
+          "type": "postgres",
+          "uid": "postgres-ops"
+        },
+        "definition": "SELECT dc_name AS __text, quote_literal(dc_name) AS __value FROM data_centre_sources WHERE user_visible = TRUE ORDER BY display_order, dc_name",
+        "query": "SELECT dc_name AS __text, quote_literal(dc_name) AS __value FROM data_centre_sources WHERE user_visible = TRUE ORDER BY display_order, dc_name",
+        "includeAll": false,
+        "multi": false,
+        "refresh": 2,
+        "sort": 1,
+        "current": {
+          "selected": true,
+          "text": "Demo Local Data Centre",
+          "value": "'Demo Local Data Centre'"
+        }
+      },
+      {
+        "name": "site_location",
+        "label": "Location",
+        "type": "textbox",
+        "query": "Local Simulation",
+        "current": {
+          "selected": true,
+          "text": "Local Simulation",
+          "value": "Local Simulation"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "Local Simulation",
+            "value": "Local Simulation"
+          }
+        ],
+        "hide": 2
+      },
+      {
+        "name": "site_ip",
+        "label": "IP Address",
+        "type": "textbox",
+        "query": "127.0.0.1",
+        "current": {
+          "selected": true,
+          "text": "127.0.0.1",
+          "value": "127.0.0.1"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "127.0.0.1",
+            "value": "127.0.0.1"
+          }
+        ],
+        "hide": 2
+      },
+      {
+        "name": "username",
+        "label": "Username",
+        "type": "textbox",
+        "query": "bitnet",
+        "current": {
+          "selected": true,
+          "text": "bitnet",
+          "value": "bitnet"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "bitnet",
+            "value": "bitnet"
+          }
+        ],
+        "hide": 2
+      },
+      {
+        "name": "scenario_phase",
+        "label": "Simulation Phase",
+        "type": "query",
+        "datasource": {
+          "type": "postgres",
+          "uid": "postgres-ops"
+        },
+        "definition": "SELECT 'Baseline' AS __text, quote_literal('baseline') AS __value\nUNION ALL SELECT 'Running', quote_literal('running')\nUNION ALL SELECT 'Scheduler Active', quote_literal('scheduler')\nUNION ALL SELECT 'GPU Training', quote_literal('gpu_training')\nUNION ALL SELECT 'FPGA Inference', quote_literal('fpga_inference')\nUNION ALL SELECT 'Optimised', quote_literal('optimised')",
+        "query": "SELECT 'Baseline' AS __text, quote_literal('baseline') AS __value\nUNION ALL SELECT 'Running', quote_literal('running')\nUNION ALL SELECT 'Scheduler Active', quote_literal('scheduler')\nUNION ALL SELECT 'GPU Training', quote_literal('gpu_training')\nUNION ALL SELECT 'FPGA Inference', quote_literal('fpga_inference')\nUNION ALL SELECT 'Optimised', quote_literal('optimised')",
+        "includeAll": false,
+        "multi": false,
+        "refresh": 1,
+        "sort": 0,
+        "current": {
+          "selected": true,
+          "text": "Baseline",
+          "value": "'baseline'"
+        }
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "GPU\u2013FPGA Acceleration",
+  "uid": "idt4-gpu-fpga",
+  "version": 1,
+  "weekStart": ""
+}

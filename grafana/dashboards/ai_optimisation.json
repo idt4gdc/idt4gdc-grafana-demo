@@ -1,0 +1,652 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "gridPos": {
+        "h": 41,
+        "w": 4,
+        "x": 0,
+        "y": 0
+      },
+      "id": 13,
+      "options": {
+        "content": "<div style=\"display:flex; flex-direction:column; height:100%; padding:6px 4px;\">\n  <div style=\"font-size:24px; font-weight:800; color:#f3f6fb; letter-spacing:0.01em; margin-bottom:4px;\">iDT4GDC</div>\n  <div style=\"font-size:12px; text-transform:uppercase; letter-spacing:0.16em; color:#8aa1c7; margin-bottom:14px;\">Demo Navigation</div>\n  <a href=\"/d/idt4-connect/connect-data-centre?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Connect Data Centre</a><a href=\"/d/idt4-overview/idt4gdc-overview?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Overview</a><a href=\"/d/idt4-analytics/idt4gdc-analytics?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Analytics</a><a href=\"/d/idt4-carbon/idt4gdc-carbon?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Carbon</a><a href=\"/d/idt4-sustainability-kpis/sustainability-kpis?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Sustainability KPIs</a><div style=\"padding:10px 12px; margin:6px 0; border-radius:10px; background:#1f2937; color:#ffffff; font-weight:700;\">AI Optimisation</div><a href=\"/d/idt4-gpu-fpga/gpu-fpga-acceleration?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">GPU\u2013FPGA Acceleration</a>\n  <div style=\"margin-top:auto; padding-top:16px; color:#93a1b5; font-size:12px; line-height:1.5;\">\n    Use the top selectors to set the active site and the Grafana time picker to change the analysis window.\n  </div>\n</div>",
+        "mode": "html"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 20,
+        "x": 4,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "content": "## AI Energy Optimisation\n\nThe original D3.3 direction targeted water-based heat reuse and water regime optimisation. In the absence of a suitable liquid-cooled testbed, the work was redirected toward **AI-based telemetry modelling** for predictive energy management.\n\nThis view shows how telemetry-driven models can support **energy-aware workload orchestration** and **predictive energy management** using currently available server signals.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "AI Energy Optimisation",
+      "transparent": false,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 4,
+        "y": 4
+      },
+      "id": 2,
+      "options": {
+        "content": "### LSTM\nTelemetry-driven benchmark\n\n- **Type:** time-series neural network\n- **Purpose:** Temporal prediction of server load and power\n- **Accuracy:** 96.90%\n- **Energy:** 6223 J\n- **Interpretation:** Highest sequential modelling complexity but materially higher energy demand than tree-based alternatives.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "LSTM",
+      "transparent": false,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 9,
+        "y": 4
+      },
+      "id": 3,
+      "options": {
+        "content": "### Random Forest\nTelemetry-driven benchmark\n\n- **Type:** ensemble learning\n- **Purpose:** Nonlinear energy-temperature relationship modelling\n- **Accuracy:** 97.45%\n- **Energy:** 2103 J\n- **Interpretation:** Stable nonlinear baseline with moderate energy cost and solid predictive behaviour.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "Random Forest",
+      "transparent": false,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 14,
+        "y": 4
+      },
+      "id": 4,
+      "options": {
+        "content": "### XGBoost\n**Preferred family**\n\n- **Type:** gradient boosting\n- **Purpose:** High-accuracy power and energy forecasting\n- **Accuracy:** 97.83%\n- **Energy:** 1245 J\n- **Interpretation:** Strong balance of predictive quality and low energy demand, making it highly suitable for orchestration loops.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "XGBoost",
+      "transparent": false,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 19,
+        "y": 4
+      },
+      "id": 5,
+      "options": {
+        "content": "### Extended XGBoost\n**Best overall** \u00b7 **Preferred family**\n\n- **Type:** enhanced gradient boosting\n- **Purpose:** Improved prediction using extended telemetry features\n- **Accuracy:** 98.13%\n- **Energy:** 1245 J\n- **Interpretation:** Best overall accuracy and stability across the evaluated telemetry-driven models.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "Extended XGBoost",
+      "transparent": false,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 4,
+        "y": 11
+      },
+      "id": 6,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.8,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "vertical",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  model_name AS \"Model\",\n  ROUND(energy_j::NUMERIC, 0) AS \"Energy (J)\"\nFROM ai_model_results\nORDER BY energy_j DESC NULLS LAST",
+          "refId": "A"
+        }
+      ],
+      "title": "Energy Consumption by Model",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 14,
+        "y": 11
+      },
+      "id": 7,
+      "options": {
+        "content": "### Preferred model family\n\n- **Extended XGBoost** achieved the best numerical accuracy and stability.\n- **XGBoost** delivered the strongest balance between predictive quality and low energy demand.\n- The XGBoost family is therefore the preferred decision support option for energy-aware orchestration.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "Preferred Model Family",
+      "transparent": false,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 4,
+        "y": 19
+      },
+      "id": 8,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.8,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "vertical",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH bounds AS (\n  SELECT MIN(energy_j) AS min_energy, MAX(energy_j) AS max_energy\n  FROM ai_model_results\n)\nSELECT\n  r.model_name AS \"Model\",\n  ROUND(r.accuracy_percent::NUMERIC, 2) AS \"Accuracy (%)\",\n  ROUND(\n    (\n      100 * (\n        1 - ((r.energy_j - b.min_energy) / NULLIF(b.max_energy - b.min_energy, 0))\n      )\n    )::NUMERIC,\n    2\n  ) AS \"Energy Efficiency Index\"\nFROM ai_model_results r\nCROSS JOIN bounds b\nORDER BY r.best_model DESC, r.preferred_family DESC, r.accuracy_percent DESC",
+          "refId": "A"
+        }
+      ],
+      "title": "Accuracy vs Energy Trade-off",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 12,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "watt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 14,
+        "y": 19
+      },
+      "id": 9,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  $__timeGroupAlias(tm.ts, '5m'),\n  'Actual Power' AS metric,\n  ROUND(SUM(tm.power_w)::NUMERIC, 1) AS value\nFROM telemetry_metrics tm\nWHERE $__timeFilter(tm.ts)\nGROUP BY 1\n\nUNION ALL\n\nSELECT\n  $__timeGroupAlias(tm.ts, '5m'),\n  'Predicted Power' AS metric,\n  ROUND(\n    SUM(\n      CASE\n        WHEN ${ai_model:raw} = 'LSTM' THEN tm.power_w * 1.018 + tm.cpu_usage * 1.85 + (tm.outlet_temp_c - tm.inlet_temp_c) * 2.10 + ((tm.inlet_temp_c - 1.6) * 0.70)\n        WHEN ${ai_model:raw} = 'Random Forest' THEN tm.power_w * 1.004 + tm.cpu_usage * 1.10 + (tm.outlet_temp_c - tm.inlet_temp_c) * 1.60 + ((tm.inlet_temp_c - 1.6) * 0.55)\n        WHEN ${ai_model:raw} = 'Extended XGBoost' THEN tm.power_w * 0.995 + tm.cpu_usage * 0.72 + (tm.outlet_temp_c - tm.inlet_temp_c) * 1.18 + ((tm.inlet_temp_c - 1.6) * 0.42)\n        ELSE tm.power_w * 0.998 + tm.cpu_usage * 0.84 + (tm.outlet_temp_c - tm.inlet_temp_c) * 1.35 + ((tm.inlet_temp_c - 1.6) * 0.48)\n      END\n    )::NUMERIC,\n    1\n  ) AS value\nFROM telemetry_metrics tm\nWHERE $__timeFilter(tm.ts)\nGROUP BY 1\nORDER BY 1",
+          "refId": "A"
+        }
+      ],
+      "title": "Actual vs Predicted Power",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 4,
+        "y": 27
+      },
+      "id": 10,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  feature_name AS \"Feature\",\n  description AS \"Why it matters\"\nFROM ai_model_features\nORDER BY display_order",
+          "refId": "A"
+        }
+      ],
+      "title": "Telemetry Feature Inputs",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 14,
+        "y": 27
+      },
+      "id": 11,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.8,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "horizontal",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  fi.feature_name AS \"Feature\",\n  ROUND(fi.importance_score::NUMERIC, 3) AS \"Importance\"\nFROM ai_feature_importance fi\nWHERE fi.model_name = 'XGBoost'\nORDER BY fi.importance_score DESC",
+          "refId": "A"
+        }
+      ],
+      "title": "XGBoost Feature Importance",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 20,
+        "x": 4,
+        "y": 35
+      },
+      "id": 12,
+      "options": {
+        "content": "## AI Outcome Panel\n\nAI-based telemetry modelling enabled predictive energy modelling without requiring a physical water-cooling testbed. The results support energy-aware workload orchestration in constrained data-centre environments.\n\n**Interpretation**\n\nThe AI layer does not replace infrastructure telemetry. Instead, it converts telemetry into a predictive control signal that can guide workload placement, reduce unnecessary energy overhead, and support constrained data-centre operations when physical heat-reuse experimentation is not available.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "AI Outcome Panel",
+      "transparent": false,
+      "type": "text"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": [
+    "idt4gdc",
+    "demo",
+    "ops"
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "data_centre",
+        "label": "Data Centre",
+        "type": "query",
+        "datasource": {
+          "type": "postgres",
+          "uid": "postgres-ops"
+        },
+        "definition": "SELECT dc_name AS __text, quote_literal(dc_name) AS __value FROM data_centre_sources WHERE user_visible = TRUE ORDER BY display_order, dc_name",
+        "query": "SELECT dc_name AS __text, quote_literal(dc_name) AS __value FROM data_centre_sources WHERE user_visible = TRUE ORDER BY display_order, dc_name",
+        "includeAll": false,
+        "multi": false,
+        "refresh": 2,
+        "sort": 1,
+        "current": {
+          "selected": true,
+          "text": "Demo Local Data Centre",
+          "value": "'Demo Local Data Centre'"
+        }
+      },
+      {
+        "name": "site_location",
+        "label": "Location",
+        "type": "textbox",
+        "query": "Local Simulation",
+        "current": {
+          "selected": true,
+          "text": "Local Simulation",
+          "value": "Local Simulation"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "Local Simulation",
+            "value": "Local Simulation"
+          }
+        ],
+        "hide": 2
+      },
+      {
+        "name": "site_ip",
+        "label": "IP Address",
+        "type": "textbox",
+        "query": "127.0.0.1",
+        "current": {
+          "selected": true,
+          "text": "127.0.0.1",
+          "value": "127.0.0.1"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "127.0.0.1",
+            "value": "127.0.0.1"
+          }
+        ],
+        "hide": 2
+      },
+      {
+        "name": "username",
+        "label": "Username",
+        "type": "textbox",
+        "query": "bitnet",
+        "current": {
+          "selected": true,
+          "text": "bitnet",
+          "value": "bitnet"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "bitnet",
+            "value": "bitnet"
+          }
+        ],
+        "hide": 2
+      },
+      {
+        "name": "ai_model",
+        "label": "AI Model",
+        "type": "query",
+        "datasource": {
+          "type": "postgres",
+          "uid": "postgres-ops"
+        },
+        "definition": "SELECT model_name AS __text, quote_literal(model_name) AS __value FROM ai_model_results ORDER BY best_model DESC, preferred_family DESC, model_name",
+        "query": "SELECT model_name AS __text, quote_literal(model_name) AS __value FROM ai_model_results ORDER BY best_model DESC, preferred_family DESC, model_name",
+        "includeAll": false,
+        "multi": false,
+        "refresh": 2,
+        "sort": 1,
+        "current": {
+          "selected": true,
+          "text": "Extended XGBoost",
+          "value": "'Extended XGBoost'"
+        }
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "AI Optimisation",
+  "uid": "idt4-ai-optimisation",
+  "version": 1,
+  "weekStart": ""
+}

@@ -1,0 +1,98 @@
+{
+  "models": [
+    {
+      "name": "LSTM",
+      "type": "time-series neural network",
+      "purpose": "Temporal prediction of server load and power",
+      "energy_j": 6223,
+      "accuracy_percent": 96.9,
+      "interpretation": "Highest sequential modelling complexity but materially higher energy demand than tree-based alternatives."
+    },
+    {
+      "name": "Random Forest",
+      "type": "ensemble learning",
+      "purpose": "Nonlinear energy-temperature relationship modelling",
+      "energy_j": 2103,
+      "accuracy_percent": 97.45,
+      "interpretation": "Stable nonlinear baseline with moderate energy cost and solid predictive behaviour."
+    },
+    {
+      "name": "XGBoost",
+      "type": "gradient boosting",
+      "purpose": "High-accuracy power and energy forecasting",
+      "energy_j": 1245,
+      "accuracy_percent": 97.83,
+      "interpretation": "Strong balance of predictive quality and low energy demand, making it highly suitable for orchestration loops.",
+      "preferred_family": true
+    },
+    {
+      "name": "Extended XGBoost",
+      "type": "enhanced gradient boosting",
+      "purpose": "Improved prediction using extended telemetry features",
+      "energy_j": 1245,
+      "accuracy_percent": 98.13,
+      "interpretation": "Best overall accuracy and stability across the evaluated telemetry-driven models.",
+      "best_model": true,
+      "preferred_family": true
+    }
+  ],
+  "features": [
+    {
+      "name": "CPU utilization",
+      "description": "Primary workload intensity signal."
+    },
+    {
+      "name": "Fan speed",
+      "description": "Cooling effort proxy used for thermal-energy coupling."
+    },
+    {
+      "name": "Inlet temperature",
+      "description": "Thermal boundary condition at system intake."
+    },
+    {
+      "name": "Outlet temperature",
+      "description": "Thermal response indicator after workload execution."
+    },
+    {
+      "name": "Ambient conditions",
+      "description": "Room-level environmental context affecting cooling behaviour."
+    },
+    {
+      "name": "System power draw",
+      "description": "Direct target-correlated consumption signal."
+    }
+  ],
+  "feature_importance": [
+    {
+      "model_name": "XGBoost",
+      "feature_name": "CPU utilization",
+      "importance_score": 0.31
+    },
+    {
+      "model_name": "XGBoost",
+      "feature_name": "System power draw",
+      "importance_score": 0.24
+    },
+    {
+      "model_name": "XGBoost",
+      "feature_name": "Outlet temperature",
+      "importance_score": 0.17
+    },
+    {
+      "model_name": "XGBoost",
+      "feature_name": "Inlet temperature",
+      "importance_score": 0.13
+    },
+    {
+      "model_name": "XGBoost",
+      "feature_name": "Fan speed",
+      "importance_score": 0.09
+    },
+    {
+      "model_name": "XGBoost",
+      "feature_name": "Ambient conditions",
+      "importance_score": 0.06
+    }
+  ],
+  "outcome_statement": "AI-based telemetry modelling enabled predictive energy modelling without requiring a physical water-cooling testbed. The results support energy-aware workload orchestration in constrained data-centre environments."
+}

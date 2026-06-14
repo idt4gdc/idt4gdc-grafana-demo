@@ -27,6 +27,27 @@
         "type": "postgres",
         "uid": "postgres-ops"
       },
+      "gridPos": {
+        "h": 31,
+        "w": 4,
+        "x": 0,
+        "y": 0
+      },
+      "id": 11,
+      "options": {
+        "content": "<div style=\"display:flex; flex-direction:column; height:100%; padding:6px 4px;\">\n  <div style=\"font-size:24px; font-weight:800; color:#f3f6fb; letter-spacing:0.01em; margin-bottom:4px;\">iDT4GDC</div>\n  <div style=\"font-size:12px; text-transform:uppercase; letter-spacing:0.16em; color:#8aa1c7; margin-bottom:14px;\">Demo Navigation</div>\n  <a href=\"/d/idt4-connect/connect-data-centre?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Connect Data Centre</a><a href=\"/d/idt4-overview/idt4gdc-overview?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Overview</a><a href=\"/d/idt4-analytics/idt4gdc-analytics?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Analytics</a><div style=\"padding:10px 12px; margin:6px 0; border-radius:10px; background:#1f2937; color:#ffffff; font-weight:700;\">Carbon</div><a href=\"/d/idt4-sustainability-kpis/sustainability-kpis?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Sustainability KPIs</a><a href=\"/d/idt4-ai-optimisation/ai-optimisation?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">AI Optimisation</a><a href=\"/d/idt4-gpu-fpga/gpu-fpga-acceleration?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">GPU\u2013FPGA Acceleration</a>\n  <div style=\"margin-top:auto; padding-top:16px; color:#93a1b5; font-size:12px; line-height:1.5;\">\n    Use the top selectors to set the active site and the Grafana time picker to change the analysis window.\n  </div>\n</div>",
+        "mode": "html"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -60,8 +81,8 @@
       },
       "gridPos": {
         "h": 7,
-        "w": 6,
-        "x": 0,
+        "w": 5,
+        "x": 4,
         "y": 0
       },
       "id": 1,
@@ -172,8 +193,8 @@
       },
       "gridPos": {
         "h": 7,
-        "w": 6,
-        "x": 6,
+        "w": 5,
+        "x": 9,
         "y": 0
       },
       "id": 2,
@@ -284,8 +305,8 @@
       },
       "gridPos": {
         "h": 7,
-        "w": 6,
-        "x": 12,
+        "w": 5,
+        "x": 14,
         "y": 0
       },
       "id": 3,
@@ -396,8 +417,8 @@
       },
       "gridPos": {
         "h": 7,
-        "w": 6,
-        "x": 18,
+        "w": 5,
+        "x": 19,
         "y": 0
       },
       "id": 4,
@@ -504,8 +525,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 0,
+        "w": 10,
+        "x": 4,
         "y": 7
       },
       "id": 5,
@@ -570,8 +591,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 12,
+        "w": 10,
+        "x": 14,
         "y": 7
       },
       "id": 6,
@@ -636,8 +657,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 0,
+        "w": 10,
+        "x": 4,
         "y": 15
       },
       "id": 7,
@@ -680,8 +701,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 12,
+        "w": 10,
+        "x": 14,
         "y": 15
       },
       "id": 8,
@@ -719,8 +740,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 0,
+        "w": 10,
+        "x": 4,
         "y": 23
       },
       "id": 9,
@@ -758,8 +779,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 12,
+        "w": 10,
+        "x": 14,
         "y": 23
       },
       "id": 10,
@@ -797,6 +818,83 @@
   ],
   "templating": {
     "list": [
+      {
+        "name": "data_centre",
+        "label": "Data Centre",
+        "type": "query",
+        "datasource": {
+          "type": "postgres",
+          "uid": "postgres-ops"
+        },
+        "definition": "SELECT dc_name AS __text, quote_literal(dc_name) AS __value FROM data_centre_sources WHERE user_visible = TRUE ORDER BY display_order, dc_name",
+        "query": "SELECT dc_name AS __text, quote_literal(dc_name) AS __value FROM data_centre_sources WHERE user_visible = TRUE ORDER BY display_order, dc_name",
+        "includeAll": false,
+        "multi": false,
+        "refresh": 2,
+        "sort": 1,
+        "current": {
+          "selected": true,
+          "text": "Demo Local Data Centre",
+          "value": "'Demo Local Data Centre'"
+        }
+      },
+      {
+        "name": "site_location",
+        "label": "Location",
+        "type": "textbox",
+        "query": "Local Simulation",
+        "current": {
+          "selected": true,
+          "text": "Local Simulation",
+          "value": "Local Simulation"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "Local Simulation",
+            "value": "Local Simulation"
+          }
+        ],
+        "hide": 2
+      },
+      {
+        "name": "site_ip",
+        "label": "IP Address",
+        "type": "textbox",
+        "query": "127.0.0.1",
+        "current": {
+          "selected": true,
+          "text": "127.0.0.1",
+          "value": "127.0.0.1"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "127.0.0.1",
+            "value": "127.0.0.1"
+          }
+        ],
+        "hide": 2
+      },
+      {
+        "name": "username",
+        "label": "Username",
+        "type": "textbox",
+        "query": "bitnet",
+        "current": {
+          "selected": true,
+          "text": "bitnet",
+          "value": "bitnet"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "bitnet",
+            "value": "bitnet"
+          }
+        ],
+        "hide": 2
+      },
       {
         "name": "room",
         "label": "Room",

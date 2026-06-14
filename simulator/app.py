@@ -2,8 +2,10 @@ import math
 import os
 import random
 import time
+import json
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 import psycopg2
 from psycopg2.extras import execute_values
@@ -13,6 +15,10 @@ DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://grafana:grafana@localhost
 SEED_HOURS = int(os.getenv("SEED_HOURS", "24"))
 HISTORY_STEP_SECONDS = int(os.getenv("HISTORY_STEP_SECONDS", "300"))
 LIVE_INTERVAL_SECONDS = int(os.getenv("LIVE_INTERVAL_SECONDS", "10"))
+AI_MODEL_RESULTS_PATH = Path(__file__).resolve().parent / "data" / "ai_model_results.json"
+SUSTAINABILITY_KPI_PATH = Path(__file__).resolve().parent / "data" / "sustainability_kpis.json"
+DATA_CENTRES_PATH = Path(__file__).resolve().parent / "data" / "data_centres.json"
+GPU_FPGA_PATH = Path(__file__).resolve().parent / "data" / "gpu_fpga_acceleration.json"
 
 
 @dataclass(frozen=True)
@@ -78,6 +84,22 @@ ASSETS = [
 
 def connect():
     return psycopg2.connect(DATABASE_URL)
+
+
+def load_ai_model_results():
+    return json.loads(AI_MODEL_RESULTS_PATH.read_text(encoding="utf-8"))
+
+
+def load_sustainability_kpis():
+    return json.loads(SUSTAINABILITY_KPI_PATH.read_text(encoding="utf-8"))
+
+
+def load_data_centres():
+    return json.loads(DATA_CENTRES_PATH.read_text(encoding="utf-8"))
+
+
+def load_gpu_fpga_data():
+    return json.loads(GPU_FPGA_PATH.read_text(encoding="utf-8"))
 
 
 def wait_for_db():
@@ -149,6 +171,458 @@ def seed_dimensions(conn):
                 )
                 for asset in ASSETS
             ],
+        )
+    conn.commit()
+
+
+def seed_ai_model_data(conn):
+    ai_data = load_ai_model_results()
+    with conn.cursor() as cur:
+        cur.executemany(
+            """
+            INSERT INTO ai_model_results (
+                model_name, model_type, purpose, energy_j, accuracy_percent,
+                interpretation, best_model, preferred_family
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            ON CONFLICT (model_name) DO UPDATE
+            SET model_type = EXCLUDED.model_type,
+                purpose = EXCLUDED.purpose,
+                energy_j = EXCLUDED.energy_j,
+                accuracy_percent = EXCLUDED.accuracy_percent,
+                interpretation = EXCLUDED.interpretation,
+                best_model = EXCLUDED.best_model,
+                preferred_family = EXCLUDED.preferred_family
+            """,
+            [
+                (
+                    model["name"],
+                    model["type"],
+                    model["purpose"],
+                    model.get("energy_j"),
+                    model.get("accuracy_percent"),
+                    model["interpretation"],
+                    model.get("best_model", False),
+                    model.get("preferred_family", False),
+                )
+                for model in ai_data["models"]
+            ],
+        )
+        cur.executemany(
+            """
+            INSERT INTO ai_model_features (feature_name, description, display_order)
+            VALUES (%s, %s, %s)
+            ON CONFLICT (feature_name) DO UPDATE
+            SET description = EXCLUDED.description,
+                display_order = EXCLUDED.display_order
+            """,
+            [
+                (feature["name"], feature["description"], idx)
+                for idx, feature in enumerate(ai_data["features"], start=1)
+            ],
+        )
+        cur.executemany(
+            """
+            INSERT INTO ai_feature_importance (model_name, feature_name, importance_score)
+            VALUES (%s, %s, %s)
+            ON CONFLICT (model_name, feature_name) DO UPDATE
+            SET importance_score = EXCLUDED.importance_score
+            """,
+            [
+                (
+                    item["model_name"],
+                    item["feature_name"],
+                    item["importance_score"],
+                )
+                for item in ai_data["feature_importance"]
+            ],
+        )
+    conn.commit()
+
+
+def seed_sustainability_kpi_data(conn):
+    sustainability_data = load_sustainability_kpis()
+    config = sustainability_data["config"]
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            INSERT INTO sustainability_kpi_config (
+                profile_name,
+                facility_overhead_base,
+                facility_overhead_wave,
+                renewable_fraction_base,
+                renewable_fraction_wave,
+                reused_energy_fraction_base,
+                reused_energy_fraction_wave,
+                baseline_co2_multiplier,
+                performance_factor,
+                cue_it_energy_share,
+                hue_base,
+                she_base,
+                apcren_base,
+                dca_base
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ON CONFLICT (profile_name) DO UPDATE
+            SET facility_overhead_base = EXCLUDED.facility_overhead_base,
+                facility_overhead_wave = EXCLUDED.facility_overhead_wave,
+                renewable_fraction_base = EXCLUDED.renewable_fraction_base,
+                renewable_fraction_wave = EXCLUDED.renewable_fraction_wave,
+                reused_energy_fraction_base = EXCLUDED.reused_energy_fraction_base,
+                reused_energy_fraction_wave = EXCLUDED.reused_energy_fraction_wave,
+                baseline_co2_multiplier = EXCLUDED.baseline_co2_multiplier,
+                performance_factor = EXCLUDED.performance_factor,
+                cue_it_energy_share = EXCLUDED.cue_it_energy_share,
+                hue_base = EXCLUDED.hue_base,
+                she_base = EXCLUDED.she_base,
+                apcren_base = EXCLUDED.apcren_base,
+                dca_base = EXCLUDED.dca_base
+            """,
+            (
+                sustainability_data["profile_name"],
+                config["facility_overhead_base"],
+                config["facility_overhead_wave"],
+                config["renewable_fraction_base"],
+                config["renewable_fraction_wave"],
+                config["reused_energy_fraction_base"],
+                config["reused_energy_fraction_wave"],
+                config["baseline_co2_multiplier"],
+                config["performance_factor"],
+                config["cue_it_energy_share"],
+                config["hue_base"],
+                config["she_base"],
+                config["apcren_base"],
+                config["dca_base"],
+            ),
+        )
+        cur.executemany(
+            """
+            INSERT INTO sustainability_kpi_metadata (
+                kpi_key, label, direction, interpretation, is_advanced, display_order
+            )
+            VALUES (%s, %s, %s, %s, %s, %s)
+            ON CONFLICT (kpi_key) DO UPDATE
+            SET label = EXCLUDED.label,
+                direction = EXCLUDED.direction,
+                interpretation = EXCLUDED.interpretation,
+                is_advanced = EXCLUDED.is_advanced,
+                display_order = EXCLUDED.display_order
+            """,
+            [
+                (
+                    kpi["key"],
+                    kpi["label"],
+                    kpi["direction"],
+                    kpi["interpretation"],
+                    kpi.get("is_advanced", False),
+                    idx,
+                )
+                for idx, kpi in enumerate(sustainability_data["kpis"], start=1)
+            ],
+        )
+    conn.commit()
+
+
+def seed_data_centre_sources(conn):
+    data = load_data_centres()
+    with conn.cursor() as cur:
+        cur.executemany(
+            """
+            INSERT INTO data_centre_sources (
+                dc_key, dc_name, location, ip_address, source_type,
+                default_username, default_password, jwt_status, stream_status,
+                display_order, user_visible, user_added
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ON CONFLICT (dc_key) DO UPDATE
+            SET dc_name = EXCLUDED.dc_name,
+                location = EXCLUDED.location,
+                ip_address = EXCLUDED.ip_address,
+                source_type = EXCLUDED.source_type,
+                default_username = EXCLUDED.default_username,
+                default_password = EXCLUDED.default_password,
+                jwt_status = EXCLUDED.jwt_status,
+                stream_status = EXCLUDED.stream_status,
+                display_order = EXCLUDED.display_order,
+                user_visible = EXCLUDED.user_visible,
+                user_added = EXCLUDED.user_added
+            """,
+            [
+                (
+                    item["key"],
+                    item["name"],
+                    item["location"],
+                    item["ip_address"],
+                    item["source_type"],
+                    item["default_username"],
+                    item["default_password"],
+                    item["jwt_status"],
+                    item["stream_status"],
+                    item["display_order"],
+                    item["user_visible"],
+                    item["user_added"],
+                )
+                for item in data["data_centres"]
+            ],
+        )
+    conn.commit()
+
+
+def seed_gpu_fpga_data(conn):
+    data = load_gpu_fpga_data()
+    workload = data["workload"]
+    scenario = data["scenario"]
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            INSERT INTO gpu_fpga_workload (workload_name, model_name, goal)
+            VALUES (%s, %s, %s)
+            ON CONFLICT (workload_name) DO UPDATE
+            SET model_name = EXCLUDED.model_name,
+                goal = EXCLUDED.goal
+            """,
+            (workload["name"], workload["model"], workload["goal"]),
+        )
+        cur.executemany(
+            """
+            INSERT INTO gpu_fpga_platform_metrics (
+                platform, role_description, training_latency_ms, inference_latency_ms,
+                speedup_training, speedup_inference, performance_per_watt, power_w, throughput
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ON CONFLICT (platform) DO UPDATE
+            SET role_description = EXCLUDED.role_description,
+                training_latency_ms = EXCLUDED.training_latency_ms,
+                inference_latency_ms = EXCLUDED.inference_latency_ms,
+                speedup_training = EXCLUDED.speedup_training,
+                speedup_inference = EXCLUDED.speedup_inference,
+                performance_per_watt = EXCLUDED.performance_per_watt,
+                power_w = EXCLUDED.power_w,
+                throughput = EXCLUDED.throughput
+            """,
+            [
+                (
+                    item["platform"],
+                    item["role"],
+                    item["training_latency_ms"],
+                    item["inference_latency_ms"],
+                    item["speedup_training"],
+                    item["speedup_inference"],
+                    item["performance_per_watt"],
+                    item["power_w"],
+                    item["throughput"],
+                )
+                for item in data["platforms"]
+            ],
+        )
+        cur.execute(
+            """
+            INSERT INTO gpu_fpga_scenario (
+                scenario_name, baseline_platform, training_platform, inference_platform,
+                baseline_energy_j, optimised_energy_j, baseline_co2_kg, optimised_co2_kg,
+                energy_saving_percent, throughput_improvement_percent, fpga_inference_speedup,
+                fpga_perf_per_watt, gpu_training_acceleration
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ON CONFLICT (scenario_name) DO UPDATE
+            SET baseline_platform = EXCLUDED.baseline_platform,
+                training_platform = EXCLUDED.training_platform,
+                inference_platform = EXCLUDED.inference_platform,
+                baseline_energy_j = EXCLUDED.baseline_energy_j,
+                optimised_energy_j = EXCLUDED.optimised_energy_j,
+                baseline_co2_kg = EXCLUDED.baseline_co2_kg,
+                optimised_co2_kg = EXCLUDED.optimised_co2_kg,
+                energy_saving_percent = EXCLUDED.energy_saving_percent,
+                throughput_improvement_percent = EXCLUDED.throughput_improvement_percent,
+                fpga_inference_speedup = EXCLUDED.fpga_inference_speedup,
+                fpga_perf_per_watt = EXCLUDED.fpga_perf_per_watt,
+                gpu_training_acceleration = EXCLUDED.gpu_training_acceleration
+            """,
+            (
+                workload["name"],
+                scenario["baseline_platform"],
+                scenario["training_platform"],
+                scenario["inference_platform"],
+                scenario["baseline_energy_j"],
+                scenario["optimised_energy_j"],
+                scenario["baseline_co2_kg"],
+                scenario["optimised_co2_kg"],
+                scenario["energy_saving_percent"],
+                scenario["throughput_improvement_percent"],
+                scenario["fpga_inference_speedup"],
+                scenario["fpga_perf_per_watt"],
+                scenario["gpu_training_acceleration"],
+            ),
+        )
+    conn.commit()
+
+
+def clamp(value, lower, upper):
+    return max(lower, min(upper, value))
+
+
+def build_sustainability_snapshot(ts, rows, sustainability_data):
+    config = sustainability_data["config"]
+    day_fraction = (ts.hour * 60 + ts.minute) / 1440.0
+    hourly_phase = 2 * math.pi * day_fraction
+
+    it_power_w = sum(row[3] for row in rows)
+    avg_cpu = sum(row[2] for row in rows) / len(rows)
+    avg_inlet = sum(row[4] for row in rows) / len(rows)
+    avg_outlet = sum(row[5] for row in rows) / len(rows)
+    avg_ef = sum(row[6] for row in rows) / len(rows)
+    warning_pressure = sum(1 for row in rows if row[8] != "normal") / len(rows)
+
+    pue = clamp(
+        config["facility_overhead_base"]
+        + config["facility_overhead_wave"] * math.sin(hourly_phase - 0.7)
+        + 0.012 * max(avg_outlet - 31.0, 0.0)
+        + 0.045 * warning_pressure,
+        1.12,
+        1.68,
+    )
+    total_facility_power_w = it_power_w * pue
+
+    ref = clamp(
+        config["renewable_fraction_base"]
+        + config["renewable_fraction_wave"] * math.sin(hourly_phase - 1.1)
+        - 0.24 * max(avg_ef - 0.30, 0.0),
+        0.18,
+        0.88,
+    )
+    erf = clamp(
+        config["reused_energy_fraction_base"]
+        + config["reused_energy_fraction_wave"] * math.cos(hourly_phase + 0.35)
+        + 0.012 * max(avg_outlet - avg_inlet - 6.0, 0.0),
+        0.04,
+        0.36,
+    )
+
+    total_energy_kwh = total_facility_power_w / 1000.0
+    renewable_energy_kwh = total_energy_kwh * ref
+    reused_energy_kwh = total_energy_kwh * erf
+    total_co2_kg = total_energy_kwh * avg_ef
+    baseline_co2_kg = total_co2_kg * config["baseline_co2_multiplier"]
+    co2_savings_kg = baseline_co2_kg - total_co2_kg
+
+    performance_score = (
+        sum(row[2] for row in rows) * config["performance_factor"] * (0.92 + ref * 0.18)
+    )
+    ppw = performance_score / max(total_facility_power_w, 1.0)
+    cue = total_co2_kg / max((it_power_w / 1000.0) * config["cue_it_energy_share"], 0.001)
+    cef = total_co2_kg / max(total_energy_kwh, 0.001)
+
+    hue = clamp(
+        config["hue_base"]
+        + 0.52 * erf
+        + 0.04 * math.sin(hourly_phase + 0.9)
+        - 0.03 * warning_pressure,
+        0.45,
+        1.05,
+    )
+    she = clamp(
+        config["she_base"]
+        + 0.38 * ref
+        + 0.24 * erf
+        + 0.03 * math.cos(hourly_phase - 0.4),
+        0.35,
+        1.0,
+    )
+    apcren = clamp(
+        config["apcren_base"]
+        + 0.44 * ref
+        - 0.08 * warning_pressure
+        + 0.03 * math.sin(hourly_phase * 2.0),
+        0.30,
+        1.0,
+    )
+    dca = clamp(
+        config["dca_base"]
+        + 0.24 * ref
+        + 0.10 * erf
+        + 0.16 * clamp((1.55 - pue) / 0.45, 0.0, 1.0)
+        - 0.08 * warning_pressure,
+        0.30,
+        1.0,
+    )
+
+    return (
+        ts,
+        round(total_facility_power_w, 2),
+        round(it_power_w, 2),
+        round(total_energy_kwh, 4),
+        round(renewable_energy_kwh, 4),
+        round(reused_energy_kwh, 4),
+        round(total_co2_kg, 4),
+        round(baseline_co2_kg, 4),
+        round(performance_score, 2),
+        round(it_power_w / 1000.0, 4),
+        round(pue, 3),
+        round(ref, 3),
+        round(erf, 3),
+        round(cef, 3),
+        round(co2_savings_kg, 4),
+        round(ppw, 3),
+        round(cue, 3),
+        round(hue, 3),
+        round(she, 3),
+        round(apcren, 3),
+        round(dca, 3),
+    )
+
+
+def insert_sustainability_snapshot(conn, ts, rows, sustainability_data):
+    snapshot = build_sustainability_snapshot(ts, rows, sustainability_data)
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            INSERT INTO sustainability_kpi_snapshots (
+                ts,
+                total_facility_power_w,
+                it_power_w,
+                total_energy_kwh,
+                renewable_energy_kwh,
+                reused_energy_kwh,
+                total_co2_kg,
+                baseline_co2_kg,
+                performance_score,
+                it_energy_kwh,
+                pue,
+                ref,
+                erf,
+                cef,
+                co2_savings_kg,
+                ppw,
+                cue,
+                hue,
+                she,
+                apcren,
+                dca
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ON CONFLICT (ts) DO UPDATE
+            SET total_facility_power_w = EXCLUDED.total_facility_power_w,
+                it_power_w = EXCLUDED.it_power_w,
+                total_energy_kwh = EXCLUDED.total_energy_kwh,
+                renewable_energy_kwh = EXCLUDED.renewable_energy_kwh,
+                reused_energy_kwh = EXCLUDED.reused_energy_kwh,
+                total_co2_kg = EXCLUDED.total_co2_kg,
+                baseline_co2_kg = EXCLUDED.baseline_co2_kg,
+                performance_score = EXCLUDED.performance_score,
+                it_energy_kwh = EXCLUDED.it_energy_kwh,
+                pue = EXCLUDED.pue,
+                ref = EXCLUDED.ref,
+                erf = EXCLUDED.erf,
+                cef = EXCLUDED.cef,
+                co2_savings_kg = EXCLUDED.co2_savings_kg,
+                ppw = EXCLUDED.ppw,
+                cue = EXCLUDED.cue,
+                hue = EXCLUDED.hue,
+                she = EXCLUDED.she,
+                apcren = EXCLUDED.apcren,
+                dca = EXCLUDED.dca
+            """,
+            snapshot,
         )
     conn.commit()
 
@@ -253,33 +727,41 @@ def insert_snapshot(conn, ts, rng):
             rows,
         )
     conn.commit()
+    return rows
 
 
-def seed_history(conn, rng):
+def seed_history(conn, rng, sustainability_data):
     if telemetry_count(conn) > 0:
         return
     end_ts = datetime.now(timezone.utc).replace(second=0, microsecond=0)
     start_ts = end_ts - timedelta(hours=SEED_HOURS)
     current = start_ts
     while current <= end_ts:
-        insert_snapshot(conn, current, rng)
+        rows = insert_snapshot(conn, current, rng)
+        insert_sustainability_snapshot(conn, current, rows, sustainability_data)
         current += timedelta(seconds=HISTORY_STEP_SECONDS)
 
 
 def main():
     wait_for_db()
     rng = random.Random(42)
+    sustainability_data = load_sustainability_kpis()
     conn = connect()
     conn.autocommit = False
     seed_dimensions(conn)
-    seed_history(conn, rng)
+    seed_ai_model_data(conn)
+    seed_data_centre_sources(conn)
+    seed_gpu_fpga_data(conn)
+    seed_sustainability_kpi_data(conn)
+    seed_history(conn, rng, sustainability_data)
 
     while True:
         try:
             latest = latest_timestamp(conn)
             now_ts = datetime.now(timezone.utc).replace(microsecond=0)
             if latest is None or latest < now_ts:
-                insert_snapshot(conn, now_ts, rng)
+                rows = insert_snapshot(conn, now_ts, rng)
+                insert_sustainability_snapshot(conn, now_ts, rows, sustainability_data)
             time.sleep(LIVE_INTERVAL_SECONDS)
         except psycopg2.Error:
             conn.close()
@@ -290,4 +772,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
