@@ -128,6 +128,12 @@ CREATE TABLE IF NOT EXISTS data_centre_sources (
     user_added BOOLEAN NOT NULL DEFAULT FALSE
 );
 
+CREATE TABLE IF NOT EXISTS data_centre_solar_panels (
+    dc_name TEXT NOT NULL,
+    ss_id   INTEGER NOT NULL,
+    PRIMARY KEY (dc_name, ss_id)
+);
+
 CREATE TABLE IF NOT EXISTS gpu_fpga_workload (
     workload_name TEXT PRIMARY KEY,
     model_name TEXT NOT NULL,
@@ -162,9 +168,57 @@ CREATE TABLE IF NOT EXISTS gpu_fpga_scenario (
     gpu_training_acceleration NUMERIC NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS forecast_generation (
+    ts                   TIMESTAMPTZ NOT NULL,
+    ss_id                INTEGER NOT NULL,
+    forecast_wh          NUMERIC NOT NULL,
+    actual_wh            NUMERIC,
+    cloud_cover          NUMERIC,
+    shortwave_radiation  NUMERIC,
+    PRIMARY KEY (ts, ss_id)
+);
+
+CREATE TABLE IF NOT EXISTS grid_forecasts (
+    ts                         TIMESTAMPTZ NOT NULL,
+    data_centre                VARCHAR(50) NOT NULL,
+    carbon_intensity_g_per_kwh INTEGER NOT NULL,
+    electricity_price_p        NUMERIC NOT NULL,
+    PRIMARY KEY (ts, data_centre)
+);
+
+CREATE TABLE IF NOT EXISTS job_submissions (
+    id             SERIAL PRIMARY KEY,
+    submitted_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    job_type       VARCHAR(10) NOT NULL CHECK (job_type IN ('CPU', 'GPU')),
+    duration_slots INTEGER NOT NULL CHECK (duration_slots >= 1),
+    priority       INTEGER NOT NULL DEFAULT 5,
+    carbon_weight  NUMERIC NOT NULL DEFAULT 1,
+    cost_weight    NUMERIC NOT NULL DEFAULT 1,
+    resource_count INTEGER NOT NULL DEFAULT 1 CHECK (resource_count >= 1),
+    window_start   TIMESTAMPTZ,
+    window_end     TIMESTAMPTZ,
+    status         VARCHAR(20) NOT NULL DEFAULT 'pending'
+                   CHECK (status IN ('pending', 'scheduled', 'confirmed', 'completed', 'cancelled'))
+);
+
+CREATE TABLE IF NOT EXISTS scheduled_jobs (
+    job_submission_id INTEGER PRIMARY KEY REFERENCES job_submissions(id),
+    scheduled_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    data_centre_name  VARCHAR(50) NOT NULL,
+    start_slot        INTEGER NOT NULL,
+    start_time        TIMESTAMPTZ NOT NULL,
+    end_time          TIMESTAMPTZ NOT NULL,
+    duration_slots    INTEGER NOT NULL,
+    carbon_total_g    INTEGER NOT NULL,
+    cost_total_p      NUMERIC NOT NULL,
+    status            VARCHAR(20) NOT NULL DEFAULT 'scheduled'
+                      CHECK (status IN ('scheduled', 'confirmed', 'completed'))
+);
+
 CREATE INDEX IF NOT EXISTS idx_telemetry_asset_ts ON telemetry_metrics (asset_id, ts DESC);
 CREATE INDEX IF NOT EXISTS idx_telemetry_ts ON telemetry_metrics (ts DESC);
 CREATE INDEX IF NOT EXISTS idx_sustainability_ts ON sustainability_kpi_snapshots (ts DESC);
+CREATE INDEX IF NOT EXISTS idx_forecast_ss_ts ON forecast_generation (ss_id, ts DESC);
 
 CREATE OR REPLACE VIEW latest_asset_metrics AS
 SELECT DISTINCT ON (tm.asset_id)

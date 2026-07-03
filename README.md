@@ -15,10 +15,12 @@
 6. [Dashboard Architecture](#6-dashboard-architecture)
 7. [Filtering and Drill-Down Model](#7-filtering-and-drill-down-model)
 8. [Alerting and Carbon Logic](#8-alerting-and-carbon-logic)
-9. [Deployment and Local Run](#9-deployment-and-local-run)
-10. [Operational Notes](#10-operational-notes)
-11. [Design Decisions and Trade-offs](#11-design-decisions-and-trade-offs)
-12. [Future Extensions](#12-future-extensions)
+9. [Solar PV Forecaster](#9-solar-pv-forecaster)
+10. [Carbon-Aware Scheduler](#10-carbon-aware-scheduler)
+11. [Deployment and Local Run](#11-deployment-and-local-run)
+12. [Operational Notes](#12-operational-notes)
+13. [Design Decisions and Trade-offs](#13-design-decisions-and-trade-offs)
+14. [Future Extensions](#14-future-extensions)
 
 ---
 
@@ -30,6 +32,8 @@ It is designed to feel closer to a real control-room deployment than a custom ap
 - Grafana provides the dashboard, filtering, refresh, and panel framework
 - PostgreSQL acts as the telemetry store and query backend
 - A Python simulator generates pseudo-live room / rack / server telemetry
+- A Python forecaster runs a pre-trained TFT model to produce solar PV generation forecasts
+- A Python scheduler assigns compute jobs to data centres using a carbon-aware CP-SAT solver
 - Provisioned dashboards expose:
   - Connect Data Centre
   - Overview
@@ -38,6 +42,8 @@ It is designed to feel closer to a real control-room deployment than a custom ap
   - Sustainability KPIs
   - AI Optimisation
   - GPU-FPGA Acceleration
+  - Forecasting
+  - Scheduler
 
 The platform is intentionally demo-oriented:
 
@@ -69,6 +75,30 @@ idt4gdc-grafana-demo/
 │       ├── gpu_fpga_acceleration.json
 │       └── sustainability_kpis.json
 │
+├── forecaster/
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   ├── app.py
+│   └── forecast-data/          ← mounted read-only into the container
+│       ├── metadata.csv        ← panel registry (ss_id, kWp, lat, lon)
+│       ├── models/
+│       │   └── forecast_global.pt
+│       ├── data/
+│       │   └── {ss_id}/
+│       │       └── all.parquet ← half-hourly generation + weather covariates
+│       └── scalers/
+│           └── covariates/
+│               └── global_{param}.pkl
+│
+├── scheduler/
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   ├── app.py                  ← FastAPI service + scheduler loop
+│   ├── model.py                ← CP-SAT solver (OR-Tools)
+│   └── data/
+│       ├── carbon_intensity.py ← NESO carbon intensity API client
+│       └── energy_prices.py    ← Octopus Agile tariff API client
+│
 ├── grafana/
 │   ├── dashboards/
 │   │   ├── connect_data_centre.json
@@ -77,7 +107,9 @@ idt4gdc-grafana-demo/
 │   │   ├── carbon.json
 │   │   ├── sustainability_kpis.json
 │   │   ├── ai_optimisation.json
-│   │   └── gpu_fpga_acceleration.json
+│   │   ├── gpu_fpga_acceleration.json
+│   │   ├── forecasting.json
+│   │   └── scheduler.json
 │   └── provisioning/
 │       ├── datasources/
 │       │   └── postgres.yml
@@ -101,6 +133,22 @@ idt4gdc-grafana-demo/
   - AI model benchmark data
   - sustainability KPI definitions
   - GPU / FPGA optimisation story data
+- `forecaster/app.py`
+  - loads the pre-trained TFT model and panel data at startup
+  - backfills 7 days of solar PV forecasts into `forecast_generation`
+  - runs the model daily at midnight UTC thereafter
+- `forecaster/forecast-data/*`
+  - user-provided model weights, panel metadata, historical parquet files, and fitted scalers
+- `scheduler/app.py`
+  - FastAPI job submission API
+  - background scheduler loop (runs every 30 min)
+  - fetches live carbon intensity and electricity prices from public APIs
+  - stores grid forecasts in `grid_forecasts`
+  - triggers the CP-SAT solver and writes results to `scheduled_jobs`
+- `scheduler/model.py`
+  - OR-Tools CP-SAT formulation: assigns jobs to data centres and time slots
+- `scheduler/data/*`
+  - thin API clients for NESO carbon intensity and Octopus Agile tariff data
 - `scripts/generate_dashboards.py`
   - Grafana dashboard JSON generation
   - left-side demo navigation
@@ -117,24 +165,40 @@ flowchart LR
     U["User / Browser"] --> G["Grafana :3000"]
     G --> P["PostgreSQL :5432 (host:5434)"]
     S["Simulator"] --> P
+    F["Forecaster"] --> P
+    SC["Scheduler :8000"] --> P
+    SC --> NESO["NESO Carbon API"]
+    SC --> OCT["Octopus Agile API"]
 
     subgraph DemoStack["Docker Compose Stack"]
         G
         P
         S
+        F
+        SC
     end
 ```
 
 ### Container roles
 
 - **PostgreSQL**
-  - stores topology, telemetry, and derived views
+  - stores topology, telemetry, forecast data, grid data, and scheduled jobs
 - **Simulator**
   - seeds dimensions
   - backfills history
   - inserts live telemetry snapshots every 10 seconds
   - derives sustainability KPI snapshots from telemetry
   - seeds AI model comparison and GPU/FPGA optimisation scenario data
+- **Forecaster**
+  - loads a pre-trained TFT model and panel data at startup
+  - backfills 7 days of solar PV generation forecasts
+  - runs the model once daily at midnight UTC
+  - writes results to `forecast_generation`
+- **Scheduler**
+  - exposes a FastAPI job submission API on port 8000
+  - fetches carbon intensity (NESO) and electricity prices (Octopus Agile) every 30 minutes
+  - runs a CP-SAT solver to assign jobs to data centres and time slots
+  - writes results to `grid_forecasts` and `scheduled_jobs`
 - **Grafana**
   - serves dashboards
   - queries PostgreSQL directly
@@ -143,8 +207,6 @@ flowchart LR
 
 ### Compose configuration
 
-Defined in [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/docker-compose.yml](/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/docker-compose.yml).
-
 Notable runtime settings:
 
 - PostgreSQL database: `opsdemo`
@@ -152,6 +214,9 @@ Notable runtime settings:
 - Historical step size: `300` seconds
 - Live refresh interval: `10` seconds
 - Grafana plugin install: `briangann-gauge-panel`
+- Scheduler confirmation window: `2` slots (1 hour ahead)
+- Forecaster backfill: `7` days
+- Forecaster daily run hour: `0` UTC
 
 ---
 
@@ -185,8 +250,6 @@ sequenceDiagram
 
 ### Telemetry generation model
 
-Implemented in [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/simulator/app.py](/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/simulator/app.py).
-
 Each asset snapshot calculates:
 
 - `cpu_usage`
@@ -213,9 +276,7 @@ This creates dashboards that look live, variable, and operationally plausible wi
 
 ## 5. Persistence Model
 
-Defined in [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/postgres/init/001-schema.sql](/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/postgres/init/001-schema.sql).
-
-### Core tables
+### Core telemetry tables
 
 #### `rooms`
 - logical facility zones
@@ -238,6 +299,41 @@ Defined in [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/postgres/ini
 #### `telemetry_metrics`
 - time-series fact table
 - primary key: `(ts, asset_id)`
+
+### Forecast table
+
+#### `forecast_generation`
+- primary key: `(ts, ss_id)`
+- `ss_id` — solar panel system identifier
+- `forecast_wh` — model-predicted generation in Wh (not null)
+- `actual_wh` — recorded actual generation in Wh (null for future slots)
+- `cloud_cover`, `shortwave_radiation` — stored alongside forecasts for dashboard use
+- populated by the Forecaster service via upsert
+
+### Scheduler tables
+
+#### `grid_forecasts`
+- primary key: `(ts, data_centre)`
+- `carbon_intensity_g_per_kwh` — fetched from NESO API
+- `electricity_price_p` — fetched from Octopus Agile API
+- covers a 48-slot (24 h) rolling horizon, refreshed every 30 minutes
+
+#### `job_submissions`
+- primary key: `id` (serial)
+- `job_type` — `CPU` or `GPU`
+- `duration_slots` — number of 30-minute slots required
+- `resource_count` — number of CPUs or GPUs needed
+- `priority`, `carbon_weight`, `cost_weight` — solver objective inputs
+- `window_start`, `window_end` — optional scheduling constraints
+- `status` — `pending` → `scheduled` → `confirmed` → `completed`
+
+#### `scheduled_jobs`
+- primary key: `job_submission_id` (one row per job)
+- links back to `job_submissions`
+- `data_centre_name` — assigned data centre
+- `start_slot`, `start_time`, `end_time` — scheduled placement
+- `carbon_total_g`, `cost_total_p` — estimated cost of placement
+- `status` — `scheduled`, `confirmed`, or `completed`
 
 ### Derived views
 
@@ -280,17 +376,19 @@ The dashboards intentionally query views for current-state panels so that:
 
 ## 6. Dashboard Architecture
 
-Dashboard generation is implemented in [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/scripts/generate_dashboards.py](/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/scripts/generate_dashboards.py).
+Dashboard generation is implemented in `scripts/generate_dashboards.py`.
 
-The generator produces seven provisioned dashboards:
+The generator produces nine provisioned dashboards:
 
-- [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/connect_data_centre.json](/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/connect_data_centre.json)
-- [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/overview.json](/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/overview.json)
-- [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/analytics.json](/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/analytics.json)
-- [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/carbon.json](/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/carbon.json)
-- [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/sustainability_kpis.json](/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/sustainability_kpis.json)
-- [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/ai_optimisation.json](/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/ai_optimisation.json)
-- [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/gpu_fpga_acceleration.json](/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/grafana/dashboards/gpu_fpga_acceleration.json)
+- `connect_data_centre.json`
+- `overview.json`
+- `analytics.json`
+- `carbon.json`
+- `sustainability_kpis.json`
+- `ai_optimisation.json`
+- `gpu_fpga_acceleration.json`
+- `forecasting.json`
+- `scheduler.json`
 
 ### Connect Data Centre dashboard
 
@@ -371,6 +469,23 @@ Focus:
 - scenario controls and operational phases
 - energy and latency improvement narrative
 
+### Forecasting dashboard
+
+Focus:
+
+- 24-hour ahead solar PV generation forecast vs actuals
+- cloud cover and shortwave radiation overlays
+- per-panel forecast accuracy visibility
+
+### Scheduler dashboard
+
+Focus:
+
+- 48-slot rolling grid forecast for each data centre (carbon intensity and electricity price)
+- submitted job queue with status
+- scheduled job placements across data centres
+- carbon and cost totals per job
+
 ### Gauge implementation
 
 The repo uses the **D3 Gauge plugin** for needle-style panels:
@@ -401,7 +516,7 @@ Additional page-specific variables include:
 - `ai_model`
 - `scenario_phase`
 
-These are generated in [/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/scripts/generate_dashboards.py](/Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo/scripts/generate_dashboards.py) and applied consistently across all dashboard SQL.
+These are generated in `scripts/generate_dashboards.py` and applied consistently across all dashboard SQL.
 
 ### Query behavior
 
@@ -462,13 +577,164 @@ This keeps carbon behavior linked to operational load while still remaining easy
 
 ---
 
-## 9. Deployment and Local Run
+## 9. Solar PV Forecaster
+
+The forecaster (`forecaster/app.py`) loads a pre-trained Temporal Fusion Transformer (TFT) model and produces 24-hour-ahead solar PV generation forecasts for one or more panel systems.
+
+### Model and data
+
+- **Model**: TFT trained with the Darts library, stored as `forecast-data/models/forecast_global.pt`
+- **Resolution**: 30-minute intervals; 48-step (24 h) lookback and 48-step forecast horizon
+- **Panel registry**: `forecast-data/metadata.csv` — one row per panel system with `ss_id`, `kWp`, `latitude_rounded`, `longitude_rounded`
+- **Historical data**: `forecast-data/data/{ss_id}/all.parquet` — DatetimeIndex at 30-min frequency with columns:
+  - `generation_Wh` — recorded solar generation
+  - weather covariates: `cloud_cover`, `shortwave_radiation`, `direct_radiation`, `diffuse_radiation`, `temperature_2m`, `relative_humidity_2m`, `dew_point_2m`, `surface_pressure`, `wind_speed_10m`
+- **Scalers**: one fitted sklearn scaler per covariate in `forecast-data/scalers/covariates/global_{param}.pkl`, applied before inference
+
+Target generation is normalised to `generation_Wh / (kWp × 1000)` before model input and rescaled back after prediction.
+
+### Time-shifting
+
+The historical parquet data ends at a fixed past date. To make Grafana show current-looking timestamps, the forecaster computes an offset:
+
+```text
+time_offset = (today − 2 years + 1 day) − data_max_date
+```
+
+All timestamps stored in `forecast_generation` are shifted forward by this offset, so the data appears to cover the last seven days relative to today.
+
+### Startup backfill and daily cadence
+
+On startup the forecaster:
+
+1. Loads the model and panel data into memory
+2. Extends the dataframe by one day of zero-padded covariate rows (required for the model's future-covariate window)
+3. Iterates over the last `BACKFILL_DAYS` (default 7) days and calls the model for each date
+4. Upserts all rows into `forecast_generation` via `ON CONFLICT (ts, ss_id) DO UPDATE`
+
+After backfill it sleeps until `RUN_HOUR` UTC (default midnight), then runs the model for the next day and repeats.
+
+### Environment variables
+
+| Variable | Default | Description |
+|---|---|---|
+| `BACKFILL_DAYS` | `7` | Days of history to populate on startup |
+| `RUN_HOUR` | `0` | UTC hour for daily forecast run |
+| `DATA_ROOT` | `/forecast-data` | Mount point for the data directory |
+| `DATABASE_URL` | `postgresql://grafana:grafana@localhost:5432/opsdemo` | PostgreSQL connection string |
+
+### Output table: `forecast_generation`
+
+| Column | Type | Notes |
+|---|---|---|
+| `ts` | TIMESTAMPTZ | Forecast slot timestamp (time-shifted) |
+| `ss_id` | INTEGER | Panel system identifier |
+| `forecast_wh` | NUMERIC | Model-predicted generation in Wh |
+| `actual_wh` | NUMERIC | Recorded actual (null for future slots) |
+| `cloud_cover` | NUMERIC | Stored for dashboard overlay |
+| `shortwave_radiation` | NUMERIC | Stored for dashboard overlay |
+
+---
+
+## 10. Carbon-Aware Scheduler
+
+The scheduler (`scheduler/app.py`) is a FastAPI service with a background thread that runs every 30 minutes. It fetches live grid data, then uses a CP-SAT integer-programming solver to assign pending compute jobs to data centres and time slots that minimise carbon and cost.
+
+### Grid data fetch policy
+
+| Data | Source | Frequency |
+|---|---|---|
+| Carbon intensity (g CO₂/kWh) | NESO API (`carbonintensity.org.uk`) | Every 30-min run |
+| Electricity price (p/kWh) | Octopus Agile API | Once daily, after 17:30 UTC |
+
+On each 30-minute run the scheduler:
+
+1. Fetches 24 h of carbon intensity forecasts per data centre (by postcode)
+2. Fetches or reloads electricity prices for the same horizon
+3. Stores the combined grid forecast in `grid_forecasts` (upsert)
+4. Loads all pending and unconfirmed jobs from `job_submissions`
+5. Runs the solver
+6. Writes results to `scheduled_jobs`
+
+If a new job is submitted via the API between scheduled runs, the background thread is woken immediately via a threading event and re-solves using cached grid data (no external API call).
+
+### CP-SAT solver (`scheduler/model.py`)
+
+The solver uses Google OR-Tools CP-SAT. Decision variables are binary: `x[dc][job][slot]` — whether job `j` starts at slot `i` in data centre `d`.
+
+**Constraints:**
+
+- Each job must start exactly once across all DCs and all slots
+- Confirmed jobs are pinned to their existing DC and slot
+- Optional `window_start` / `window_end` constraints exclude slots outside the job's allowed window
+- Resource capacity: the total CPU (or GPU) demand of all overlapping jobs cannot exceed the DC's `available_cpus` / `available_gpus`
+
+**Objective** (minimised):
+
+```text
+Σ jobs: (carbon_intensity_sum × carbon_weight) + (price_sum × cost_weight) + (start_slot × priority)
+```
+
+The `priority` term biases the solver toward earlier slots for higher-priority jobs when carbon and cost are similar.
+
+**Data centres** (configurable via `DATA_CENTRES` env var):
+
+| Name | Postcode | DNO Region | CPUs | GPUs |
+|---|---|---|---|---|
+| Reading | RG4 | J | 2048 | 256 |
+| London | SW1A | C | 2048 | 256 |
+
+### Confirmation lock
+
+Jobs whose scheduled `start_slot` falls within the next `CONFIRMATION_SLOTS` (default 2) half-hour slots are set to `status='confirmed'`. Confirmed jobs are treated as pinned in subsequent solver runs and are not rescheduled unless they have already completed.
+
+### Job lifecycle
+
+```text
+pending → scheduled → confirmed → completed
+```
+
+A job transitions from `scheduled` to `confirmed` when the scheduler run places it within the confirmation window. It transitions to `completed` when its `end_time` has passed.
+
+### REST API
+
+The scheduler exposes a REST API on port 8000:
+
+| Method | Path | Description |
+|---|---|---|
+| `POST` | `/api/jobs` | Submit a new compute job |
+| `GET` | `/api/jobs` | List all job submissions (last 100) |
+| `GET` | `/api/schedule` | List all scheduled job placements |
+| `GET` | `/api/grid` | Return current grid forecast data |
+| `GET` | `/api/health` | Health check |
+
+**Job submission fields:**
+
+| Field | Type | Default | Description |
+|---|---|---|---|
+| `job_type` | string | `CPU` | `CPU` or `GPU` |
+| `duration_slots` | integer | `4` | Number of 30-min slots required |
+| `resource_count` | integer | `1` | CPUs or GPUs needed |
+| `priority` | integer | `5` | Lower = more urgent |
+| `carbon_weight` | float | `1.0` | Weight applied to carbon cost in objective |
+| `cost_weight` | float | `1.0` | Weight applied to electricity cost in objective |
+| `window_start` | datetime | null | Earliest allowed start time |
+| `window_end` | datetime | null | Latest allowed start time |
+
+### Output tables
+
+**`grid_forecasts`** — rolling 48-slot grid state per data centre, refreshed each run.
+
+**`scheduled_jobs`** — one row per job with assigned DC, slot, start/end times, and estimated carbon and cost totals.
+
+---
+
+## 11. Deployment and Local Run
 
 ### Start the demo
 
 ```bash
-cd /Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo
-python3 scripts/generate_dashboards.py
+python scripts/generate_dashboards.py
 docker compose up -d --build
 ```
 
@@ -478,6 +744,7 @@ docker compose up -d --build
 - Username: `admin`
 - Password: `admin`
 - PostgreSQL: `localhost:5434`
+- Scheduler API: [http://localhost:8000](http://localhost:8000)
 
 Recommended entry point:
 
@@ -486,15 +753,13 @@ Recommended entry point:
 ### Stop the stack
 
 ```bash
-cd /Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo
 docker compose down
 ```
 
 ### Rebuild after dashboard changes
 
 ```bash
-cd /Users/westerops/Desktop/idt-codex/idt4gdc-grafana-demo
-python3 scripts/generate_dashboards.py
+python scripts/generate_dashboards.py
 docker compose up -d --build
 ```
 
@@ -502,7 +767,7 @@ If dashboard JSON changes are not visible immediately, do a hard refresh in the 
 
 ---
 
-## 10. Operational Notes
+## 12. Operational Notes
 
 ### Initial state
 
@@ -510,6 +775,8 @@ On a fresh run:
 
 - dimensions are seeded
 - the simulator backfills the last 24 hours
+- the forecaster backfills 7 days of solar PV forecasts
+- the scheduler fetches grid data and solves any queued jobs
 - Grafana provisions dashboards automatically
 - the default home dashboard is the Connect Data Centre page
 
@@ -517,6 +784,8 @@ On a fresh run:
 
 - live telemetry inserts every `10` seconds
 - Grafana dashboards auto-refresh every `10` seconds
+- scheduler grid data refreshes every `30` minutes
+- forecaster runs once daily at midnight UTC
 
 ### Data characteristics
 
@@ -530,9 +799,13 @@ That is intentional because the objective is:
 - no dependency on external DCIM or telemetry systems
 - fake connection flow is UI-driven rather than truly stateful authentication
 
+The forecaster does use real historical generation and weather data files supplied by the user, but timestamps are shifted to appear current.
+
+The scheduler fetches real carbon intensity and electricity price data from public APIs (NESO and Octopus Agile). An internet connection is required for the scheduler to populate grid data.
+
 ---
 
-## 11. Design Decisions and Trade-offs
+## 13. Design Decisions and Trade-offs
 
 ### Why Grafana
 
@@ -563,6 +836,19 @@ Pseudo-live simulation is preferred because it:
 - lets gauges and trends change naturally
 - better resembles a monitoring environment
 
+### Why CP-SAT for scheduling
+
+OR-Tools CP-SAT gives:
+
+- exact optimal or near-optimal solutions for small job counts
+- native support for resource capacity constraints
+- pinning of confirmed jobs without re-formulation
+- deterministic, explainable assignment decisions
+
+### Why time-shift the forecast data
+
+The TFT model was trained on historical data ending at a fixed past date. Rather than retrain or fake inputs, a constant offset is applied at write time so that all stored timestamps appear current to Grafana without any runtime transformation in SQL.
+
 ### Known limitations
 
 - no external authentication integration
@@ -570,10 +856,12 @@ Pseudo-live simulation is preferred because it:
 - no persisted Grafana user state between clean recreations
 - no custom rack-layout Digital Twin screen inside Grafana
 - the connection flow is simulated through dashboard variables and links, not a true backend session
+- the forecaster runs a single panel system per container instance (`SS_ID`)
+- the scheduler requires internet access to fetch live grid data; it falls back to defaults (`200 g/kWh`, `15 p/kWh`) if API calls fail
 
 ---
 
-## 12. Future Extensions
+## 14. Future Extensions
 
 The next realistic upgrade paths are:
 
@@ -608,8 +896,10 @@ This repository is best understood as a **self-contained, pseudo-live operations
 
 - PostgreSQL provides the operational data model
 - the simulator provides realistic changing telemetry
+- the forecaster provides 24-hour-ahead solar PV generation forecasts using a pre-trained TFT model
+- the scheduler provides carbon-aware compute job placement using CP-SAT optimisation against live grid data
 - Grafana provides the monitoring experience
-- dashboards provide current-state, analytic, and carbon visibility
+- dashboards provide current-state, analytic, carbon, forecasting, and scheduling visibility
 - AI and sustainability modules extend the story from monitoring into optimisation and KPI interpretation
 
 It is intentionally simple to run, easy to explain, and strong enough for stakeholder review, internal demos, and architecture discussions.

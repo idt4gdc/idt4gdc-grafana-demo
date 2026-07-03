@@ -1,0 +1,671 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "gridPos": {
+        "h": 34,
+        "w": 4,
+        "x": 0,
+        "y": 0
+      },
+      "id": 10,
+      "options": {
+        "content": "<div style=\"display:flex; flex-direction:column; height:100%; padding:6px 4px;\">\n  <div style=\"font-size:24px; font-weight:800; color:#f3f6fb; letter-spacing:0.01em; margin-bottom:4px;\">iDT4GDC</div>\n  <div style=\"font-size:12px; text-transform:uppercase; letter-spacing:0.16em; color:#8aa1c7; margin-bottom:14px;\">Demo Navigation</div>\n  <a href=\"/d/idt4-connect/connect-data-centre?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Connect Data Centre</a><a href=\"/d/idt4-overview/idt4gdc-overview?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Overview</a><a href=\"/d/idt4-analytics/idt4gdc-analytics?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Analytics</a><a href=\"/d/idt4-carbon/idt4gdc-carbon?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Carbon</a><a href=\"/d/idt4-sustainability-kpis/sustainability-kpis?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Sustainability KPIs</a><a href=\"/d/idt4-ai-optimisation/ai-optimisation?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">AI Optimisation</a><a href=\"/d/idt4-gpu-fpga/gpu-fpga-acceleration?refresh=10s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">GPU\u2013FPGA Acceleration</a><div style=\"padding:10px 12px; margin:6px 0; border-radius:10px; background:#1f2937; color:#ffffff; font-weight:700;\">Forecasting</div><a href=\"/d/idt4-scheduler/scheduler?refresh=30s&${data_centre:queryparam}&${site_location:queryparam}&${site_ip:queryparam}&${username:queryparam}\" style=\"display:block; padding:10px 12px; margin:6px 0; border-radius:10px; background:#111827; color:#d7dee9; text-decoration:none; font-weight:600;\">Scheduler</a>\n  <div style=\"margin-top:auto; padding-top:16px; color:#93a1b5; font-size:12px; line-height:1.5;\">\n    Use the top selectors to set the active site and the Grafana time picker to change the analysis window.\n  </div>\n</div>",
+        "mode": "html"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 20,
+        "x": 4,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "content": "## Solar PV Forecasting\n\nA pre-trained Temporal Fusion Transformer (TFT) model forecasts solar PV generation for the selected panel, using weather covariates (cloud cover, radiation, temperature, humidity, wind) alongside historical output. Forecast vs. actual generation is compared below to gauge model accuracy (MAE).\n\nTimestamps are shifted forward from the source dataset so the data lines up with Grafana's default \"current\" time ranges \u2014 the underlying model was trained on historical weather and generation data, not live readings.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "Solar PV Forecasting",
+      "transparent": false,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "watth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 4,
+        "y": 4
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT NOW() AS time,\n  COALESCE(ROUND(SUM(forecast_wh)::NUMERIC, 1), 0) AS value\nFROM forecast_generation\nWHERE ts BETWEEN NOW() - INTERVAL '2 years' AND NOW() - INTERVAL '2 years' + INTERVAL '1 hour'\n  AND ss_id = ${solar_panel}::INTEGER",
+          "refId": "A"
+        }
+      ],
+      "title": "Next-Hour Forecast",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "watth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 9,
+        "y": 4
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT NOW() AS time,\n  COALESCE(ROUND(MAX(forecast_wh)::NUMERIC, 1), 0) AS value\nFROM forecast_generation\nWHERE DATE(ts AT TIME ZONE 'UTC') = DATE((NOW() - INTERVAL '2 years') AT TIME ZONE 'UTC')\n  AND ss_id = ${solar_panel}::INTEGER",
+          "refId": "A"
+        }
+      ],
+      "title": "Peak Daily Forecast",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 150
+              }
+            ]
+          },
+          "unit": "watth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 14,
+        "y": 4
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT NOW() AS time,\n  COALESCE(ROUND(AVG(ABS(forecast_wh - actual_wh))::NUMERIC, 1), 0) AS value\nFROM forecast_generation\nWHERE actual_wh IS NOT NULL\n  AND $__timeFilter(ts)\n  AND ss_id = ${solar_panel}::INTEGER",
+          "refId": "A"
+        }
+      ],
+      "title": "Forecast MAE",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 19,
+        "y": 4
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT NOW() AS time,\n  COUNT(DISTINCT DATE(ts))::NUMERIC AS value\nFROM forecast_generation\nWHERE ss_id = ${solar_panel}::INTEGER",
+          "refId": "A"
+        }
+      ],
+      "title": "Days of Forecast Data",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 12,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "watth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 20,
+        "x": 4,
+        "y": 8
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT ts AS time,\n  forecast_wh AS \"Forecast (Wh)\",\n  actual_wh   AS \"Actual (Wh)\"\nFROM forecast_generation\nWHERE $__timeFilter(ts)\n  AND ss_id = ${solar_panel}::INTEGER\nORDER BY ts",
+          "refId": "A"
+        }
+      ],
+      "title": "Forecast vs Actual Generation",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 12,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 4,
+        "y": 18
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT ts AS time,\n  cloud_cover AS \"Cloud Cover (%)\"\nFROM forecast_generation\nWHERE $__timeFilter(ts)\n  AND ss_id = ${solar_panel}::INTEGER\nORDER BY ts",
+          "refId": "A"
+        }
+      ],
+      "title": "Cloud Cover",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 12,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "wm2"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 14,
+        "y": 18
+      },
+      "id": 8,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT ts AS time,\n  shortwave_radiation AS \"Shortwave Radiation (W/m\u00b2)\"\nFROM forecast_generation\nWHERE $__timeFilter(ts)\n  AND ss_id = ${solar_panel}::INTEGER\nORDER BY ts",
+          "refId": "A"
+        }
+      ],
+      "title": "Shortwave Radiation",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 20,
+        "x": 4,
+        "y": 26
+      },
+      "id": 9,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  ts                                          AS \"Time\",\n  ROUND(forecast_wh::NUMERIC, 1)             AS \"Forecast (Wh)\",\n  ROUND(actual_wh::NUMERIC, 1)               AS \"Actual (Wh)\",\n  CASE WHEN actual_wh IS NOT NULL\n    THEN ROUND(ABS(forecast_wh - actual_wh)::NUMERIC, 1)\n  END                                        AS \"Error (Wh)\",\n  ROUND(cloud_cover::NUMERIC, 1)             AS \"Cloud Cover (%)\",\n  ROUND(shortwave_radiation::NUMERIC, 1)     AS \"Shortwave (W/m\u00b2)\"\nFROM forecast_generation\nWHERE $__timeFilter(ts)\n  AND ss_id = ${solar_panel}::INTEGER\nORDER BY ts DESC",
+          "refId": "A"
+        }
+      ],
+      "title": "Forecast Detail",
+      "type": "table"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": [
+    "idt4gdc",
+    "demo",
+    "ops"
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "data_centre",
+        "label": "Data Centre",
+        "type": "query",
+        "datasource": {
+          "type": "postgres",
+          "uid": "postgres-ops"
+        },
+        "definition": "SELECT dc_name AS __text, quote_literal(dc_name) AS __value FROM data_centre_sources WHERE user_visible = TRUE ORDER BY display_order, dc_name",
+        "query": "SELECT dc_name AS __text, quote_literal(dc_name) AS __value FROM data_centre_sources WHERE user_visible = TRUE ORDER BY display_order, dc_name",
+        "includeAll": false,
+        "multi": false,
+        "refresh": 2,
+        "sort": 1,
+        "current": {
+          "selected": true,
+          "text": "Reading",
+          "value": "'Reading'"
+        }
+      },
+      {
+        "name": "site_location",
+        "label": "Location",
+        "type": "textbox",
+        "query": "Reading, UK",
+        "current": {
+          "selected": true,
+          "text": "Reading, UK",
+          "value": "Reading, UK"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "Reading, UK",
+            "value": "Reading, UK"
+          }
+        ],
+        "hide": 2
+      },
+      {
+        "name": "site_ip",
+        "label": "IP Address",
+        "type": "textbox",
+        "query": "10.20.11.10",
+        "current": {
+          "selected": true,
+          "text": "10.20.11.10",
+          "value": "10.20.11.10"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "10.20.11.10",
+            "value": "10.20.11.10"
+          }
+        ],
+        "hide": 2
+      },
+      {
+        "name": "username",
+        "label": "Username",
+        "type": "textbox",
+        "query": "ops_reading",
+        "current": {
+          "selected": true,
+          "text": "ops_reading",
+          "value": "ops_reading"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "ops_reading",
+            "value": "ops_reading"
+          }
+        ],
+        "hide": 2
+      },
+      {
+        "name": "solar_panel",
+        "label": "Solar Panel",
+        "type": "query",
+        "datasource": {
+          "type": "postgres",
+          "uid": "postgres-ops"
+        },
+        "definition": "SELECT DISTINCT m.ss_id::TEXT AS __text, m.ss_id::TEXT AS __value\nFROM data_centre_solar_panels m\nJOIN forecast_generation fg ON fg.ss_id = m.ss_id\nWHERE m.dc_name = ${data_centre:raw}\nORDER BY 1",
+        "query": "SELECT DISTINCT m.ss_id::TEXT AS __text, m.ss_id::TEXT AS __value\nFROM data_centre_solar_panels m\nJOIN forecast_generation fg ON fg.ss_id = m.ss_id\nWHERE m.dc_name = ${data_centre:raw}\nORDER BY 1",
+        "includeAll": false,
+        "multi": false,
+        "refresh": 2,
+        "sort": 1
+      }
+    ]
+  },
+  "time": {
+    "from": "now-736d",
+    "to": "now-728d"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Solar PV Forecasting",
+  "uid": "idt4-forecasting",
+  "version": 1,
+  "weekStart": ""
+}

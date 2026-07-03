@@ -30,6 +30,37 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  forecaster:
+    build:
+      context: ./forecaster
+    container_name: idt4gdc-forecaster
+    environment:
+      DATABASE_URL: postgresql://grafana:grafana@postgres:5432/opsdemo
+      SS_IDS: "10006,3625,22794,27152"
+      BACKFILL_DAYS: "7"
+      RUN_HOUR: "0"
+      DATA_ROOT: /forecast-data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ./forecaster/forecast-data:/forecast-data:ro
+
+  scheduler:
+    build:
+      context: ./scheduler
+    container_name: idt4gdc-scheduler
+    environment:
+      DATABASE_URL: postgresql://grafana:grafana@postgres:5432/opsdemo
+      CONFIRMATION_SLOTS: "2"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
   grafana:
     image: grafana/grafana:11.0.0
     container_name: idt4gdc-grafana

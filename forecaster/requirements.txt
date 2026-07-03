@@ -1,0 +1,7 @@
+psycopg2-binary==2.9.9
+darts==0.35.0
+pytorch-lightning
+scikit-learn
+pandas
+pyarrow
+joblib

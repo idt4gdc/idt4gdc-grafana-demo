@@ -368,6 +368,21 @@ def seed_data_centre_sources(conn):
     conn.commit()
 
 
+def seed_data_centre_solar_panels(conn):
+    data = load_data_centres()
+    with conn.cursor() as cur:
+        cur.execute("DELETE FROM data_centre_solar_panels")
+        cur.executemany(
+            "INSERT INTO data_centre_solar_panels (dc_name, ss_id) VALUES (%s, %s)",
+            [
+                (item["name"], ss_id)
+                for item in data["data_centres"]
+                for ss_id in item.get("ss_ids", [])
+            ],
+        )
+    conn.commit()
+
+
 def seed_gpu_fpga_data(conn):
     data = load_gpu_fpga_data()
     workload = data["workload"]
@@ -751,6 +766,7 @@ def main():
     seed_dimensions(conn)
     seed_ai_model_data(conn)
     seed_data_centre_sources(conn)
+    seed_data_centre_solar_panels(conn)
     seed_gpu_fpga_data(conn)
     seed_sustainability_kpi_data(conn)
     seed_history(conn, rng, sustainability_data)

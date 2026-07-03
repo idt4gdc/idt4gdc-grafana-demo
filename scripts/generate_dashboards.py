@@ -19,6 +19,7 @@ RACK_VAR = "${rack:raw}"
 SERVER_VAR = "${server:raw}"
 AI_MODEL_VAR = "${ai_model:raw}"
 SCENARIO_PHASE_VAR = "${scenario_phase:raw}"
+SOLAR_PANEL_VAR = "${solar_panel}"
 SITE_LOCATION_QP = "${site_location:queryparam}"
 SITE_IP_QP = "${site_ip:queryparam}"
 USERNAME_QP = "${username:queryparam}"
@@ -45,6 +46,8 @@ DEMO_NAV_ITEMS = [
     ("idt4-sustainability-kpis", "Sustainability KPIs", f"/d/idt4-sustainability-kpis/sustainability-kpis?refresh=10s&{connection_query_params()}"),
     ("idt4-ai-optimisation", "AI Optimisation", f"/d/idt4-ai-optimisation/ai-optimisation?refresh=10s&{connection_query_params()}"),
     ("idt4-gpu-fpga", "GPU–FPGA Acceleration", f"/d/idt4-gpu-fpga/gpu-fpga-acceleration?refresh=10s&{connection_query_params()}"),
+    ("idt4-forecasting", "Forecasting", f"/d/idt4-forecasting/solar-pv-forecasting?refresh=10s&{connection_query_params()}"),
+    ("idt4-scheduler", "Scheduler", f"/d/idt4-scheduler/scheduler?refresh=30s&{connection_query_params()}"),
 ]
 FILTERS = dedent(
     f"""
@@ -83,10 +86,7 @@ def ai_model_variable():
 
 def data_centre_variable():
     query = "SELECT dc_name AS __text, quote_literal(dc_name) AS __value FROM data_centre_sources WHERE user_visible = TRUE ORDER BY display_order, dc_name"
-    default_name = next(
-        (item["name"] for item in DATA_CENTRES["data_centres"] if item["name"] == "Demo Local Data Centre"),
-        DATA_CENTRES["data_centres"][0]["name"],
-    )
+    default_name = DATA_CENTRES["data_centres"][0]["name"]
     return {
         "name": "data_centre",
         "label": "Data Centre",
@@ -111,10 +111,7 @@ def ip_address_variable():
         ORDER BY display_order
         """
     ).strip()
-    default_ip = next(
-        (item["ip_address"] for item in DATA_CENTRES["data_centres"] if item["name"] == "Demo Local Data Centre"),
-        DATA_CENTRES["data_centres"][0]["ip_address"],
-    )
+    default_ip = DATA_CENTRES["data_centres"][0]["ip_address"]
     return {
         "name": "ip_address",
         "label": "IP Address",
@@ -142,14 +139,15 @@ def textbox_variable(name, label, default_value):
 
 
 def connection_context_variables(include_password=False, hidden=False):
+    default_dc = DATA_CENTRES["data_centres"][0]
     vars_list = [
         data_centre_variable(),
-        textbox_variable("site_location", "Location", "Local Simulation"),
-        textbox_variable("site_ip", "IP Address", "127.0.0.1"),
-        textbox_variable("username", "Username", "bitnet"),
+        textbox_variable("site_location", "Location", default_dc["location"]),
+        textbox_variable("site_ip", "IP Address", default_dc["ip_address"]),
+        textbox_variable("username", "Username", default_dc["default_username"]),
     ]
     if include_password:
-        vars_list.append(textbox_variable("password", "Password", "datatwin"))
+        vars_list.append(textbox_variable("password", "Password", default_dc["default_password"]))
     if hidden:
         for variable in vars_list:
             if variable["name"] != "data_centre":
@@ -269,7 +267,7 @@ def annotations():
     }
 
 
-def dashboard_base(title, uid, panels, time_from="now-6h", include_scope_filters=True, extra_variables=None):
+def dashboard_base(title, uid, panels, time_from="now-6h", time_to="now", include_scope_filters=True, extra_variables=None):
     variables = []
     if extra_variables:
         variables.extend(extra_variables)
@@ -289,7 +287,7 @@ def dashboard_base(title, uid, panels, time_from="now-6h", include_scope_filters
         "style": "dark",
         "tags": ["idt4gdc", "demo", "ops"],
         "templating": {"list": variables},
-        "time": {"from": time_from, "to": "now"},
+        "time": {"from": time_from, "to": time_to},
         "timepicker": {},
         "timezone": "",
         "title": title,
@@ -2737,6 +2735,476 @@ def gpu_fpga_acceleration_dashboard():
     )
 
 
+def job_selector_variable():
+    query = dedent("""
+        SELECT
+          sj.job_submission_id::text AS __value,
+          (sj.job_submission_id::text || ' — ' || js.job_type
+           || ' ' || sj.duration_slots || ' slots, '
+           || sj.data_centre_name || ' @ '
+           || TO_CHAR(sj.start_time AT TIME ZONE 'UTC', 'HH24:MI') || ' UTC') AS __text
+        FROM scheduled_jobs sj
+        JOIN job_submissions js ON js.id = sj.job_submission_id
+        WHERE sj.status IN ('scheduled', 'confirmed')
+        ORDER BY sj.start_time
+    """).strip()
+    return {
+        "name": "job_id",
+        "label": "Visualise Job",
+        "type": "query",
+        "datasource": DATASOURCE,
+        "definition": query,
+        "query": query,
+        "includeAll": True,
+        "allValue": "0",
+        "multi": False,
+        "refresh": 2,
+        "sort": 0,
+    }
+
+
+def solar_panel_variable():
+    query = dedent(
+        f"""
+        SELECT DISTINCT m.ss_id::TEXT AS __text, m.ss_id::TEXT AS __value
+        FROM data_centre_solar_panels m
+        JOIN forecast_generation fg ON fg.ss_id = m.ss_id
+        WHERE m.dc_name = {DATA_CENTRE_VAR}
+        ORDER BY 1
+        """
+    ).strip()
+    return {
+        "name": "solar_panel",
+        "label": "Solar Panel",
+        "type": "query",
+        "datasource": DATASOURCE,
+        "definition": query,
+        "query": query,
+        "includeAll": False,
+        "multi": False,
+        "refresh": 2,
+        "sort": 1,
+    }
+
+
+def forecasting_dashboard():
+    p = PanelIds()
+    panels = [
+        text_panel(
+            p,
+            "Solar PV Forecasting",
+            dedent(
+                """
+                ## Solar PV Forecasting
+
+                A pre-trained Temporal Fusion Transformer (TFT) model forecasts solar PV generation for the selected panel, using weather covariates (cloud cover, radiation, temperature, humidity, wind) alongside historical output. Forecast vs. actual generation is compared below to gauge model accuracy (MAE).
+
+                Timestamps are shifted forward from the source dataset so the data lines up with Grafana's default "current" time ranges — the underlying model was trained on historical weather and generation data, not live readings.
+                """
+            ).strip(),
+            0,
+            0,
+            24,
+            4,
+        ),
+        stat_panel(
+            p,
+            "Next-Hour Forecast",
+            f"""
+            SELECT NOW() AS time,
+              COALESCE(ROUND(SUM(forecast_wh)::NUMERIC, 1), 0) AS value
+            FROM forecast_generation
+            WHERE ts BETWEEN NOW() - INTERVAL '2 years' AND NOW() - INTERVAL '2 years' + INTERVAL '1 hour'
+              AND ss_id = {SOLAR_PANEL_VAR}::INTEGER
+            """,
+            "watth",
+            0, 4, 6, 4,
+            [{"color": "green", "value": None}],
+        ),
+        stat_panel(
+            p,
+            "Peak Daily Forecast",
+            f"""
+            SELECT NOW() AS time,
+              COALESCE(ROUND(MAX(forecast_wh)::NUMERIC, 1), 0) AS value
+            FROM forecast_generation
+            WHERE DATE(ts AT TIME ZONE 'UTC') = DATE((NOW() - INTERVAL '2 years') AT TIME ZONE 'UTC')
+              AND ss_id = {SOLAR_PANEL_VAR}::INTEGER
+            """,
+            "watth",
+            6, 4, 6, 4,
+            [{"color": "green", "value": None}],
+        ),
+        stat_panel(
+            p,
+            "Forecast MAE",
+            f"""
+            SELECT NOW() AS time,
+              COALESCE(ROUND(AVG(ABS(forecast_wh - actual_wh))::NUMERIC, 1), 0) AS value
+            FROM forecast_generation
+            WHERE actual_wh IS NOT NULL
+              AND $__timeFilter(ts)
+              AND ss_id = {SOLAR_PANEL_VAR}::INTEGER
+            """,
+            "watth",
+            12, 4, 6, 4,
+            [{"color": "green", "value": None}, {"color": "yellow", "value": 50}, {"color": "red", "value": 150}],
+        ),
+        stat_panel(
+            p,
+            "Days of Forecast Data",
+            f"""
+            SELECT NOW() AS time,
+              COUNT(DISTINCT DATE(ts))::NUMERIC AS value
+            FROM forecast_generation
+            WHERE ss_id = {SOLAR_PANEL_VAR}::INTEGER
+            """,
+            "none",
+            18, 4, 6, 4,
+            [{"color": "green", "value": None}],
+        ),
+        timeseries_panel(
+            p,
+            "Forecast vs Actual Generation",
+            f"""
+            SELECT ts AS time,
+              forecast_wh AS "Forecast (Wh)",
+              actual_wh   AS "Actual (Wh)"
+            FROM forecast_generation
+            WHERE $__timeFilter(ts)
+              AND ss_id = {SOLAR_PANEL_VAR}::INTEGER
+            ORDER BY ts
+            """,
+            "watth",
+            0, 8, 24, 10,
+        ),
+        timeseries_panel(
+            p,
+            "Cloud Cover",
+            f"""
+            SELECT ts AS time,
+              cloud_cover AS "Cloud Cover (%)"
+            FROM forecast_generation
+            WHERE $__timeFilter(ts)
+              AND ss_id = {SOLAR_PANEL_VAR}::INTEGER
+            ORDER BY ts
+            """,
+            "percent",
+            0, 18, 12, 8,
+        ),
+        timeseries_panel(
+            p,
+            "Shortwave Radiation",
+            f"""
+            SELECT ts AS time,
+              shortwave_radiation AS "Shortwave Radiation (W/m²)"
+            FROM forecast_generation
+            WHERE $__timeFilter(ts)
+              AND ss_id = {SOLAR_PANEL_VAR}::INTEGER
+            ORDER BY ts
+            """,
+            "wm2",
+            12, 18, 12, 8,
+        ),
+        table_panel(
+            p,
+            "Forecast Detail",
+            f"""
+            SELECT
+              ts                                          AS "Time",
+              ROUND(forecast_wh::NUMERIC, 1)             AS "Forecast (Wh)",
+              ROUND(actual_wh::NUMERIC, 1)               AS "Actual (Wh)",
+              CASE WHEN actual_wh IS NOT NULL
+                THEN ROUND(ABS(forecast_wh - actual_wh)::NUMERIC, 1)
+              END                                        AS "Error (Wh)",
+              ROUND(cloud_cover::NUMERIC, 1)             AS "Cloud Cover (%)",
+              ROUND(shortwave_radiation::NUMERIC, 1)     AS "Shortwave (W/m²)"
+            FROM forecast_generation
+            WHERE $__timeFilter(ts)
+              AND ss_id = {SOLAR_PANEL_VAR}::INTEGER
+            ORDER BY ts DESC
+            """,
+            0, 26, 24, 8,
+        ),
+    ]
+    return dashboard_base(
+        "Solar PV Forecasting",
+        "idt4-forecasting",
+        with_demo_nav(p, panels, "idt4-forecasting"),
+        time_from="now-736d",
+        time_to="now-728d",
+        include_scope_filters=False,
+        extra_variables=connection_context_variables(hidden=True) + [solar_panel_variable()],
+    )
+
+
+def scheduler_dashboard():
+    p = PanelIds()
+    panels = [
+        text_panel(
+            p,
+            "Scheduler",
+            dedent(
+                """
+                ## Scheduler
+
+                A carbon-and-cost-aware job scheduler places CPU and GPU workloads onto the greenest, cheapest available half-hour slots across four data centres. It weighs each pending job's carbon intensity forecast, electricity price forecast, and priority to decide where and when it runs, then locks in jobs starting soon as "confirmed" so they are no longer rescheduled.
+
+                Grid carbon intensity (NESO) and electricity price (Octopus Agile) forecasts drive placement decisions; the resulting schedule and job queue are shown below.
+                """
+            ).strip(),
+            0,
+            0,
+            24,
+            4,
+        ),
+        stat_panel(
+            p,
+            "Pending Jobs",
+            "SELECT NOW() AS time, COUNT(*)::NUMERIC AS value FROM job_submissions WHERE status = 'pending'",
+            "none",
+            0, 4, 4, 4,
+            [{"color": "green", "value": None}, {"color": "yellow", "value": 3}, {"color": "red", "value": 8}],
+        ),
+        stat_panel(
+            p,
+            "Scheduled Jobs",
+            "SELECT NOW() AS time, COUNT(*)::NUMERIC AS value FROM job_submissions WHERE status = 'scheduled'",
+            "none",
+            4, 4, 4, 4,
+            [{"color": "green", "value": None}],
+        ),
+        stat_panel(
+            p,
+            "Confirmed Jobs",
+            "SELECT NOW() AS time, COUNT(*)::NUMERIC AS value FROM job_submissions WHERE status = 'confirmed'",
+            "none",
+            8, 4, 4, 4,
+            [{"color": "blue", "value": None}],
+        ),
+        stat_panel(
+            p,
+            "Best Grid CI Now (gCO₂/kWh)",
+            """
+            SELECT NOW() AS time, MIN(carbon_intensity_g_per_kwh)::NUMERIC AS value
+            FROM grid_forecasts
+            WHERE ts = (SELECT MAX(ts) FROM grid_forecasts WHERE ts <= NOW())
+            """,
+            "none",
+            12, 4, 6, 4,
+            [{"color": "green", "value": None}, {"color": "yellow", "value": 150}, {"color": "red", "value": 250}],
+        ),
+        stat_panel(
+            p,
+            "Best Grid Price Now (p/kWh)",
+            """
+            SELECT NOW() AS time, MIN(electricity_price_p)::NUMERIC AS value
+            FROM grid_forecasts
+            WHERE ts = (SELECT MAX(ts) FROM grid_forecasts WHERE ts <= NOW())
+            """,
+            "none",
+            18, 4, 6, 4,
+            [{"color": "green", "value": None}, {"color": "yellow", "value": 20}, {"color": "red", "value": 35}],
+        ),
+        timeseries_panel(
+            p,
+            "Grid Carbon Intensity Forecast",
+            """
+            SELECT
+              ts AS time,
+              data_centre AS metric,
+              carbon_intensity_g_per_kwh::NUMERIC AS value
+            FROM grid_forecasts
+            WHERE $__timeFilter(ts)
+            ORDER BY ts
+            """,
+            "none",
+            0, 8, 12, 8,
+        ),
+        timeseries_panel(
+            p,
+            "Grid Electricity Price Forecast",
+            """
+            SELECT
+              ts AS time,
+              data_centre AS metric,
+              electricity_price_p::NUMERIC AS value
+            FROM grid_forecasts
+            WHERE $__timeFilter(ts)
+            ORDER BY ts
+            """,
+            "none",
+            12, 8, 12, 8,
+        ),
+        *[
+            {
+                "datasource": DATASOURCE,
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {"mode": "fixed", "fixedColor": color},
+                        "custom": {
+                            "drawStyle": "bars",
+                            "fillOpacity": 70,
+                            "lineWidth": 1,
+                            "showPoints": "never",
+                            "spanNulls": False,
+                        },
+                        "mappings": [],
+                        "min": 0,
+                        "unit": "none",
+                    },
+                    "overrides": [],
+                },
+                "gridPos": {"h": 8, "w": 6, "x": panel_x, "y": panel_y},
+                "id": p.next(),
+                "options": {
+                    "legend": {"displayMode": "list", "placement": "bottom", "showLegend": False},
+                    "tooltip": {"mode": "single", "sort": "none"},
+                },
+                "pluginVersion": PLUGIN_VERSION,
+                "targets": [target(f"""
+                    SELECT
+                      slots.ts AS time,
+                      COALESCE(SUM(j.resource_count), 0)::NUMERIC AS "Units"
+                    FROM (SELECT DISTINCT ts FROM grid_forecasts WHERE $__timeFilter(ts)) slots
+                    LEFT JOIN (
+                      SELECT sj.start_time, sj.end_time, js.resource_count
+                      FROM scheduled_jobs sj
+                      JOIN job_submissions js ON js.id = sj.job_submission_id
+                      WHERE sj.status IN ('scheduled', 'confirmed')
+                        AND sj.data_centre_name = '{dc_name}'
+                        AND js.job_type = '{job_type}'
+                    ) j ON slots.ts >= j.start_time AND slots.ts < j.end_time
+                    GROUP BY slots.ts
+                    ORDER BY slots.ts
+                """, fmt="time_series")],
+                "title": f"{dc_name} — {job_type}",
+                "type": "timeseries",
+            }
+            for dc_name, job_type, panel_x, panel_y, color in [
+                ("Reading",      "CPU", 0,  16, "blue"),
+                ("Reading",      "GPU", 6,  16, "light-blue"),
+                ("Peterborough", "CPU", 12, 16, "green"),
+                ("Peterborough", "GPU", 18, 16, "light-green"),
+                ("London",       "CPU", 0,  24, "orange"),
+                ("London",       "GPU", 6,  24, "yellow"),
+                ("Edinburgh",    "CPU", 12, 24, "purple"),
+                ("Edinburgh",    "GPU", 18, 24, "pink"),
+            ]
+        ],
+        table_panel(
+            p,
+            "Current Schedule",
+            """
+            SELECT
+              sj.job_submission_id AS "Job ID",
+              js.job_type AS "Type",
+              sj.data_centre_name AS "Data Centre",
+              sj.start_time AT TIME ZONE 'UTC' AS "Start (UTC)",
+              sj.end_time AT TIME ZONE 'UTC' AS "End (UTC)",
+              sj.duration_slots AS "Slots",
+              sj.carbon_total_g AS "CI Score",
+              ROUND(sj.cost_total_p::NUMERIC, 1) AS "Cost Score",
+              sj.status AS "Status"
+            FROM scheduled_jobs sj
+            JOIN job_submissions js ON js.id = sj.job_submission_id
+            WHERE sj.status IN ('scheduled', 'confirmed')
+            ORDER BY sj.start_time
+            """,
+            0, 32, 24, 9,
+        ),
+        table_panel(
+            p,
+            "Job Queue",
+            """
+            SELECT
+              id AS "ID",
+              job_type AS "Type",
+              resource_count AS "Units",
+              duration_slots AS "Slots",
+              priority AS "Priority",
+              ROUND(carbon_weight::NUMERIC, 1) AS "Carbon Weight",
+              ROUND(cost_weight::NUMERIC, 1) AS "Cost Weight",
+              submitted_at AT TIME ZONE 'UTC' AS "Submitted (UTC)",
+              status AS "Status"
+            FROM job_submissions
+            WHERE status NOT IN ('completed', 'cancelled')
+            ORDER BY submitted_at DESC
+            LIMIT 50
+            """,
+            0, 41, 24, 8,
+        ),
+    ]
+    annotation_sql = dedent("""
+        SELECT
+          sj.start_time AS time,
+          sj.end_time   AS "timeEnd",
+          (js.job_type || ' #' || sj.job_submission_id::text
+           || ' — ' || sj.data_centre_name
+           || ' (' || sj.status || ')') AS text,
+          sj.data_centre_name AS tags
+        FROM scheduled_jobs sj
+        JOIN job_submissions js ON js.id = sj.job_submission_id
+        WHERE ${job_id:raw}::integer != 0
+          AND sj.job_submission_id = ${job_id:raw}::integer
+          AND sj.status IN ('scheduled', 'confirmed')
+    """).strip()
+
+    dash = dashboard_base(
+        "Scheduler",
+        "idt4-scheduler",
+        with_demo_nav(p, panels, "idt4-scheduler"),
+        time_from="now-30m",
+        time_to="now+24h",
+        include_scope_filters=False,
+        extra_variables=connection_context_variables(hidden=True) + [job_selector_variable()],
+    )
+    window_sql = dedent("""
+        SELECT
+          js.window_start AS time,
+          js.window_end   AS "timeEnd",
+          ('Schedulable window for #' || js.id::text) AS text,
+          'window' AS tags
+        FROM job_submissions js
+        WHERE ${job_id:raw}::integer != 0
+          AND js.id = ${job_id:raw}::integer
+          AND js.window_start IS NOT NULL
+          AND js.window_end IS NOT NULL
+    """).strip()
+
+    dash["annotations"]["list"].append({
+        "builtIn": 0,
+        "datasource": DATASOURCE,
+        "enable": True,
+        "hide": False,
+        "iconColor": "rgba(100, 180, 255, 0.4)",
+        "name": "Schedulable Window",
+        "target": {
+            "datasource": DATASOURCE,
+            "rawSql": window_sql,
+            "format": "table",
+            "refId": "AnnoWindow",
+        },
+        "type": "alert",
+    })
+    dash["annotations"]["list"].append({
+        "builtIn": 0,
+        "datasource": DATASOURCE,
+        "enable": True,
+        "hide": False,
+        "iconColor": "rgba(255, 200, 0, 0.7)",
+        "name": "Job Window",
+        "target": {
+            "datasource": DATASOURCE,
+            "rawSql": annotation_sql,
+            "format": "table",
+            "refId": "Anno",
+        },
+        "type": "alert",
+    })
+    return dash
+
+
 def write_dashboard(filename, dashboard):
     DASHBOARD_DIR.mkdir(parents=True, exist_ok=True)
     (DASHBOARD_DIR / filename).write_text(json.dumps(dashboard, indent=2) + "\n")
@@ -2750,6 +3218,8 @@ def main():
     write_dashboard("sustainability_kpis.json", sustainability_kpis_dashboard())
     write_dashboard("ai_optimisation.json", ai_optimisation_dashboard())
     write_dashboard("gpu_fpga_acceleration.json", gpu_fpga_acceleration_dashboard())
+    write_dashboard("forecasting.json", forecasting_dashboard())
+    write_dashboard("scheduler.json", scheduler_dashboard())
 
 
 if __name__ == "__main__":
