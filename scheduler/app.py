@@ -17,7 +17,7 @@ import os
 import threading
 import time
 from contextlib import asynccontextmanager
-from datetime import date, datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 import psycopg2
@@ -45,7 +45,7 @@ DATA_CENTRES = json.loads(os.getenv("DATA_CENTRES", json.dumps([
 ])))
 
 _trigger = threading.Event()
-_last_price_date: Optional[date] = None  # date of last successful price fetch
+_last_price_fetch: Optional[datetime] = None  # timestamp of last successful price fetch
 
 
 # ── DB ────────────────────────────────────────────────────────────────────────
@@ -75,13 +75,14 @@ def horizon_start() -> datetime:
 # ── Grid data ─────────────────────────────────────────────────────────────────
 
 def _should_fetch_prices() -> bool:
-    """True on first run, or after 17:30 UTC on a new day."""
-    if _last_price_date is None:
+    """True on first run, or once per day after 17:30 UTC (once tomorrow's prices are published)."""
+    if _last_price_fetch is None:
         return True  # startup — fetch whatever is available
-    today = datetime.now(timezone.utc)
-    if _last_price_date >= today.date():
-        return False  # already fetched today
-    return today.hour > 17 or (today.hour == 17 and today.minute >= 30)
+    now = datetime.now(timezone.utc)
+    cutoff = now.replace(hour=17, minute=30, second=0, microsecond=0)
+    if now < cutoff:
+        return False  # today's post-cutoff refresh hasn't opened yet
+    return _last_price_fetch < cutoff  # fetch once per day, after the cutoff
 
 
 def _fetch_ci(postcode: str, h: datetime) -> list[int]:
@@ -250,7 +251,7 @@ def _load_jobs(conn, dcs: list, h: datetime) -> list[dict]:
 # ── Core scheduler ────────────────────────────────────────────────────────────
 
 def run_scheduler_once(fetch_grid: bool = True) -> None:
-    global _last_price_date
+    global _last_price_fetch
     h = horizon_start()
 
     conn = new_conn()
@@ -267,7 +268,7 @@ def run_scheduler_once(fetch_grid: bool = True) -> None:
                     'forecasted_price': prices,
                 })
             if fetch_prices:
-                _last_price_date = datetime.now(timezone.utc).date()
+                _last_price_fetch = datetime.now(timezone.utc)
             _store_grid(conn, dcs, h)
         else:
             log.info("Re-solving from cached grid data — horizon %s", h.isoformat())
