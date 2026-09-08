@@ -750,6 +750,34 @@ Recommended entry point:
 
 - [http://localhost:3000/d/idt4-connect/connect-data-centre?refresh=10s](http://localhost:3000/d/idt4-connect/connect-data-centre?refresh=10s)
 
+### Replaying a real ExaDigiT simulation (optional)
+
+The `replay/` service can feed the dashboards with an actual ExaDigiT simulation (job power draw, and per-CDU cooling temperatures when captured) instead of the simulator's fully synthetic data. It's opt-in via a Compose profile and adds a separate `dt-`-prefixed room to the existing room/rack/server filters, so it never touches the regular demo assets.
+
+**1. Export a simulation run**, from the sibling [`idt4gdc-digital-twins`](../idt4gdc-digital-twins) repo:
+
+```bash
+cd ../idt4gdc-digital-twins/loadtest
+python export_sim.py --system idt4gdc_dc1 --duration-hours 4 --rate-per-hour 20
+```
+
+This submits a sim to the ExaDigiT simulation-server (must be running — see that repo's README), polls it to completion, and writes job records, power history, and cooling telemetry to `exports/sim_export_<sim_id>/`. Cooling is captured by default (`--no-cooling` to skip it and speed up the run); other systems (`idt4gdc_dc2`/`dc3`/`dc4`) and job-rate/duration are configurable — see `--help`.
+
+**2. Replay it into this demo:**
+
+```bash
+REPLAY_EXPORT_DIR=../idt4gdc-digital-twins/exports/sim_export_<sim_id> \
+  docker compose --profile replay up -d --build
+```
+
+The container backfills a short window then loops the sim's timeline continuously (`LOOP=true`), inserting rows at wall-clock "now" just like the simulator, so it reads as live data. Check `docker logs idt4gdc-replay` on startup — it reports `cooling=real (N pt)` when real cooling data was found in the export, or `cooling=synthetic` when falling back to the same formulas the regular simulator uses.
+
+Stop it independently of the rest of the stack with:
+
+```bash
+docker compose --profile replay down
+```
+
 ### Stop the stack
 
 ```bash

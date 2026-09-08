@@ -47,6 +47,28 @@ services:
     volumes:
       - ./forecaster/forecast-data:/forecast-data:ro
 
+  replay:
+    profiles: ["replay"]  # opt-in: docker compose --profile replay up -d --build
+    build:
+      context: ./replay
+    container_name: idt4gdc-replay
+    environment:
+      DATABASE_URL: postgresql://grafana:grafana@postgres:5432/opsdemo
+      EXPORT_DIR: /replay-data/current
+      REPLAY_SPEED: "20"
+      LIVE_INTERVAL_SECONDS: "10"
+      BACKFILL_MINUTES: "20"
+      LOOP: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      # Point at a sim_export_<id>/ directory produced by
+      # idt4gdc-digital-twins/loadtest/export_sim.py. Override with:
+      #   REPLAY_EXPORT_DIR=../idt4gdc-digital-twins/exports/sim_export_xxx docker compose --profile replay up -d --build
+      - ${REPLAY_EXPORT_DIR:-./replay/export}:/replay-data/current:ro
+
   scheduler:
     build:
       context: ./scheduler
