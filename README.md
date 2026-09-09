@@ -166,7 +166,7 @@ flowchart LR
     G --> P["PostgreSQL :5432 (host:5434)"]
     S["Simulator"] --> P
     F["Forecaster"] --> P
-    SC["Scheduler :8000"] --> P
+    SC["Scheduler :8080"] --> P
     SC --> NESO["NESO Carbon API"]
     SC --> OCT["Octopus Agile API"]
 
@@ -195,7 +195,7 @@ flowchart LR
   - runs the model once daily at midnight UTC
   - writes results to `forecast_generation`
 - **Scheduler**
-  - exposes a FastAPI job submission API on port 8000
+  - exposes a FastAPI job submission API on port 8080
   - fetches carbon intensity (NESO) and electricity prices (Octopus Agile) every 30 minutes
   - runs a CP-SAT solver to assign jobs to data centres and time slots
   - writes results to `grid_forecasts` and `scheduled_jobs`
@@ -677,12 +677,14 @@ The solver uses Google OR-Tools CP-SAT. Decision variables are binary: `x[dc][jo
 
 The `priority` term biases the solver toward earlier slots for higher-priority jobs when carbon and cost are similar.
 
-**Data centres** (configurable via `DATA_CENTRES` env var):
+**Data centres** (configurable via `DATA_CENTRES` env var). `CPUs`/`GPUs` are node counts, not core/chip counts — they mirror each site's `idt4gdc_dc{1,2,3,4}` system in `idt4gdc-digital-twins` (`nodes_per_rack: 32`, split into `gpu_racks` vs the remaining CPU racks):
 
-| Name | Postcode | DNO Region | CPUs | GPUs |
-|---|---|---|---|---|
-| Reading | RG4 | J | 2048 | 256 |
-| London | SW1A | C | 2048 | 256 |
+| Name | Postcode | DNO Region | CPUs | GPUs | idt4gdc system |
+|---|---|---|---|---|---|
+| Reading | RG31 | J | 1344 | 448 | `dc3` (56 racks, largest) |
+| Edinburgh | EH14 | N | 384 | 128 | `dc1` (16 racks) |
+| London | UB2 | C | 288 | 96 | `dc2` (12 racks) |
+| Peterborough | PE2 | A | 160 | 32 | `dc4` (6 racks, smallest) |
 
 ### Confirmation lock
 
@@ -698,12 +700,14 @@ A job transitions from `scheduled` to `confirmed` when the scheduler run places 
 
 ### REST API
 
-The scheduler exposes a REST API on port 8000:
+The scheduler exposes a REST API on port 8080 (`http://localhost:8080`, interactive docs at `/docs`):
 
 | Method | Path | Description |
 |---|---|---|
 | `POST` | `/api/jobs` | Submit a new compute job |
+| `POST` | `/api/jobs/batch` | Submit multiple compute jobs in one call — plain JSON array body, no wrapper key (atomic insert, single re-solve) |
 | `GET` | `/api/jobs` | List all job submissions (last 100) |
+| `DELETE` | `/api/jobs` | Clear job submissions and their scheduled placements — optional `?status=pending\|scheduled\|confirmed\|completed\|cancelled` to clear only that status; with no query param, clears everything. Returns `{"deleted": <count>}` |
 | `GET` | `/api/schedule` | List all scheduled job placements |
 | `GET` | `/api/grid` | Return current grid forecast data |
 | `GET` | `/api/health` | Health check |
@@ -712,20 +716,25 @@ The scheduler exposes a REST API on port 8000:
 
 | Field | Type | Default | Description |
 |---|---|---|---|
+| `label` | string | null | Optional human-readable name for the job — persisted end-to-end and shown in `/api/schedule`, the Job Queue table, and the Current Schedule table |
 | `job_type` | string | `CPU` | `CPU` or `GPU` |
 | `duration_slots` | integer | `4` | Number of 30-min slots required |
-| `resource_count` | integer | `1` | CPUs or GPUs needed |
-| `priority` | integer | `5` | Lower = more urgent |
+| `resource_count` | integer | `1` | CPU or GPU nodes needed (capped by the target DC's `available_cpus`/`available_gpus`) |
+| `priority` | integer | `5` | Higher = more urgent — biases the solver toward an earlier start slot regardless of carbon/cost |
 | `carbon_weight` | float | `1.0` | Weight applied to carbon cost in objective |
 | `cost_weight` | float | `1.0` | Weight applied to electricity cost in objective |
 | `window_start` | datetime | null | Earliest allowed start time |
 | `window_end` | datetime | null | Latest allowed start time |
 
+`scheduler/demo_job_batch.json` has a ready-to-submit example batch for `/api/jobs/batch`, spanning carbon-only, cost-only, balanced, and priority-driven weight combinations — also served as a live example in the Swagger UI, with two "overnight" jobs and one "urgent" job carrying a `window_start`/`window_end` computed relative to whenever `/docs` is opened.
+
 ### Output tables
 
 **`grid_forecasts`** — rolling 48-slot grid state per data centre, refreshed each run.
 
-**`scheduled_jobs`** — one row per job with assigned DC, slot, start/end times, and estimated carbon and cost totals.
+**`job_submissions`** — one row per submitted job (pending, scheduled, confirmed, completed, or cancelled), including its `label` and weights.
+
+**`scheduled_jobs`** — one row per placed job with assigned DC, slot, start/end times, and estimated carbon and cost totals.
 
 ---
 
@@ -744,7 +753,7 @@ docker compose up -d --build
 - Username: `admin`
 - Password: `admin`
 - PostgreSQL: `localhost:5434`
-- Scheduler API: [http://localhost:8000](http://localhost:8000)
+- Scheduler API: [http://localhost:8080](http://localhost:8080) (interactive docs at `/docs`)
 
 Recommended entry point:
 

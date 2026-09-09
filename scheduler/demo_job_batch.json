@@ -1,0 +1,146 @@
+[
+  {
+    "label": "GPU training run — carbon-optimised, fully flexible",
+    "job_type": "GPU",
+    "duration_slots": 8,
+    "resource_count": 4,
+    "priority": 1,
+    "carbon_weight": 5.0,
+    "cost_weight": 0.2
+  },
+  {
+    "label": "Batch CPU analytics — carbon-optimised",
+    "job_type": "CPU",
+    "duration_slots": 6,
+    "resource_count": 8,
+    "priority": 1,
+    "carbon_weight": 5.0,
+    "cost_weight": 0.2
+  },
+  {
+    "label": "Large CPU batch — cost-optimised",
+    "job_type": "CPU",
+    "duration_slots": 10,
+    "resource_count": 16,
+    "priority": 1,
+    "carbon_weight": 0.2,
+    "cost_weight": 5.0
+  },
+  {
+    "label": "GPU inference batch — cost-optimised",
+    "job_type": "GPU",
+    "duration_slots": 4,
+    "resource_count": 2,
+    "priority": 1,
+    "carbon_weight": 0.2,
+    "cost_weight": 5.0
+  },
+  {
+    "label": "Balanced CPU workload",
+    "job_type": "CPU",
+    "duration_slots": 4,
+    "resource_count": 4,
+    "priority": 4,
+    "carbon_weight": 2.0,
+    "cost_weight": 2.0
+  },
+  {
+    "label": "Balanced GPU workload",
+    "job_type": "GPU",
+    "duration_slots": 6,
+    "resource_count": 2,
+    "priority": 4,
+    "carbon_weight": 2.0,
+    "cost_weight": 2.0
+  },
+  {
+    "label": "Overnight CPU batch — carbon-lean",
+    "job_type": "CPU",
+    "duration_slots": 16,
+    "resource_count": 12,
+    "priority": 2,
+    "carbon_weight": 3.0,
+    "cost_weight": 1.0
+  },
+  {
+    "label": "Overnight GPU batch — cost-lean",
+    "job_type": "GPU",
+    "duration_slots": 12,
+    "resource_count": 3,
+    "priority": 2,
+    "carbon_weight": 1.0,
+    "cost_weight": 3.0
+  },
+  {
+    "label": "Urgent CPU job — must start ASAP",
+    "job_type": "CPU",
+    "duration_slots": 2,
+    "resource_count": 2,
+    "priority": 9,
+    "carbon_weight": 1.0,
+    "cost_weight": 1.0
+  },
+  {
+    "label": "Urgent GPU inference — must start ASAP",
+    "job_type": "GPU",
+    "duration_slots": 2,
+    "resource_count": 1,
+    "priority": 8,
+    "carbon_weight": 1.0,
+    "cost_weight": 1.0
+  },
+  {
+    "label": "Deferred CPU batch job — carbon-heavy, fully flexible",
+    "job_type": "CPU",
+    "duration_slots": 24,
+    "resource_count": 20,
+    "priority": 1,
+    "carbon_weight": 4.0,
+    "cost_weight": 0.5
+  },
+  {
+    "label": "Deferred GPU batch job — cost-heavy, fully flexible",
+    "job_type": "GPU",
+    "duration_slots": 20,
+    "resource_count": 4,
+    "priority": 1,
+    "carbon_weight": 0.5,
+    "cost_weight": 4.0
+  },
+  {
+    "label": "Multi-GPU training run — carbon-lean",
+    "job_type": "GPU",
+    "duration_slots": 8,
+    "resource_count": 8,
+    "priority": 3,
+    "carbon_weight": 3.0,
+    "cost_weight": 1.5
+  },
+  {
+    "label": "Multi-node CPU batch — cost-lean",
+    "job_type": "CPU",
+    "duration_slots": 8,
+    "resource_count": 24,
+    "priority": 3,
+    "carbon_weight": 1.5,
+    "cost_weight": 3.0
+  },
+  {
+    "label": "Small GPU job — carbon-only priority",
+    "job_type": "GPU",
+    "duration_slots": 4,
+    "resource_count": 1,
+    "priority": 1,
+    "carbon_weight": 8.0,
+    "cost_weight": 0.1
+  },
+  {
+    "label": "Small CPU job — cost-only priority",
+    "job_type": "CPU",
+    "duration_slots": 4,
+    "resource_count": 2,
+    "priority": 1,
+    "carbon_weight": 0.1,
+    "cost_weight": 8.0
+  }
+]

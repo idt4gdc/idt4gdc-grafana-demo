@@ -11,6 +11,7 @@ Grid data fetch policy:
 Confirmation: jobs starting within the next CONFIRMATION_SLOTS half-hour
 slots are locked (status='confirmed') and not rescheduled on later runs.
 """
+import copy
 import json
 import logging
 import os
@@ -18,11 +19,13 @@ import threading
 import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from typing import Optional
 
 import psycopg2
 import psycopg2.extras
-from fastapi import FastAPI, HTTPException
+from fastapi import Body, FastAPI, HTTPException
+from fastapi.openapi.utils import get_openapi
 from pydantic import BaseModel
 
 from model import schedule_jobs
@@ -37,15 +40,27 @@ CONFIRMATION_SLOTS = int(os.getenv("CONFIRMATION_SLOTS", "2"))
 SLOT_MINUTES = 30
 TOTAL_SLOTS = 48  # 24-hour horizon
 
+# available_cpus/available_gpus are node counts (not core/chip counts), matching
+# idt4gdc-digital-twins' demonstration-sites table and each system's RAPS config
+# (exadigit/exadigit/raps/config/idt4gdc_dc{1,2,3,4}.yaml): nodes_per_rack=32,
+# split into gpu_racks vs the remaining CPU racks. dc3=Reading (56 racks, 14 GPU),
+# dc1=Edinburgh (16 racks, 4 GPU), dc2=London (12 racks, 3 GPU),
+# dc4=Peterborough (6 racks, 1 GPU).
 DATA_CENTRES = json.loads(os.getenv("DATA_CENTRES", json.dumps([
-    {"name": "Reading",      "ss_id": 3625,  "postcode": "RG31", "dno_region": "J", "available_cpus": 2048, "available_gpus": 256},
-    {"name": "Peterborough", "ss_id": 10006, "postcode": "PE2",  "dno_region": "A", "available_cpus": 2048, "available_gpus": 256},
-    {"name": "London",       "ss_id": 22794, "postcode": "UB2",  "dno_region": "C", "available_cpus": 2048, "available_gpus": 256},
-    {"name": "Edinburgh",    "ss_id": 27152, "postcode": "EH14", "dno_region": "N", "available_cpus": 2048, "available_gpus": 256},
+    {"name": "Reading",      "ss_id": 3625,  "postcode": "RG31", "dno_region": "J", "available_cpus": 1344, "available_gpus": 448},
+    {"name": "Peterborough", "ss_id": 10006, "postcode": "PE2",  "dno_region": "A", "available_cpus": 160,  "available_gpus": 32},
+    {"name": "London",       "ss_id": 22794, "postcode": "UB2",  "dno_region": "C", "available_cpus": 288,  "available_gpus": 96},
+    {"name": "Edinburgh",    "ss_id": 27152, "postcode": "EH14", "dno_region": "N", "available_cpus": 384,  "available_gpus": 128},
 ])))
 
 _trigger = threading.Event()
 _last_price_fetch: Optional[datetime] = None  # timestamp of last successful price fetch
+
+DEMO_BATCH_PATH = Path(__file__).parent / "demo_job_batch.json"
+try:
+    _demo_batch_example = json.loads(DEMO_BATCH_PATH.read_text())
+except FileNotFoundError:
+    _demo_batch_example = []
 
 
 # ── DB ────────────────────────────────────────────────────────────────────────
@@ -356,6 +371,7 @@ app = FastAPI(title="iDT4GDC Scheduler", version="1.0", lifespan=lifespan)
 
 
 class JobRequest(BaseModel):
+    label: Optional[str] = None
     job_type: str = "CPU"
     duration_slots: int = 4
     resource_count: int = 1
@@ -366,8 +382,7 @@ class JobRequest(BaseModel):
     window_end: Optional[datetime] = None
 
 
-@app.post("/api/jobs", status_code=201)
-def submit_job(req: JobRequest):
+def _validate_job(req: JobRequest) -> None:
     if req.job_type not in ("CPU", "GPU"):
         raise HTTPException(400, "job_type must be 'CPU' or 'GPU'")
     if not (1 <= req.duration_slots <= TOTAL_SLOTS):
@@ -375,23 +390,66 @@ def submit_job(req: JobRequest):
     if req.resource_count < 1:
         raise HTTPException(400, "resource_count must be >= 1")
 
+
+def _insert_job(cur, req: JobRequest) -> dict:
+    cur.execute("""
+        INSERT INTO job_submissions
+            (label, job_type, duration_slots, resource_count, priority, carbon_weight, cost_weight, window_start, window_end)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        RETURNING id, label, submitted_at, status
+    """, (req.label, req.job_type, req.duration_slots, req.resource_count, req.priority,
+          req.carbon_weight, req.cost_weight, req.window_start, req.window_end))
+    row = cur.fetchone()
+    return {"id": row[0], "label": row[1], "submitted_at": row[2].isoformat(), "status": row[3]}
+
+
+@app.post("/api/jobs", status_code=201)
+def submit_job(req: JobRequest):
+    _validate_job(req)
+
     conn = new_conn()
     try:
         with conn.cursor() as cur:
-            cur.execute("""
-                INSERT INTO job_submissions
-                    (job_type, duration_slots, resource_count, priority, carbon_weight, cost_weight, window_start, window_end)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                RETURNING id, submitted_at, status
-            """, (req.job_type, req.duration_slots, req.resource_count, req.priority,
-                  req.carbon_weight, req.cost_weight, req.window_start, req.window_end))
-            row = cur.fetchone()
+            result = _insert_job(cur, req)
         conn.commit()
     finally:
         conn.close()
 
     _trigger.set()
-    return {"id": row[0], "submitted_at": row[1].isoformat(), "status": row[2]}
+    return result
+
+
+@app.post("/api/jobs/batch", status_code=201)
+def submit_jobs_batch(
+    reqs: list[JobRequest] = Body(
+        ...,
+        openapi_examples={
+            "demo_job_batch": {
+                "summary": "Demo job batch (scheduler/demo_job_batch.json)",
+                "description": "16 jobs spanning carbon-only, cost-only, balanced, and priority-driven "
+                                "weight combinations, for demoing carbon-aware placement across the horizon.",
+                "value": _demo_batch_example,
+            }
+        },
+    ),
+):
+    """Submit multiple jobs in one call. Inserts are atomic (all-or-nothing) and
+    trigger a single re-solve for the whole batch, rather than one per job."""
+    if not reqs:
+        raise HTTPException(400, "request body must be a non-empty list of jobs")
+    for req in reqs:
+        _validate_job(req)
+
+    conn = new_conn()
+    try:
+        with conn.cursor() as cur:
+            results = [_insert_job(cur, req) for req in reqs]
+        conn.commit()
+    finally:
+        conn.close()
+
+    _trigger.set()
+    return results
 
 
 @app.get("/api/jobs")
@@ -400,7 +458,7 @@ def list_jobs():
     try:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute("""
-                SELECT id, job_type, duration_slots, priority, carbon_weight, cost_weight,
+                SELECT id, label, job_type, duration_slots, priority, carbon_weight, cost_weight,
                        submitted_at, window_start, window_end, status
                 FROM job_submissions ORDER BY submitted_at DESC LIMIT 100
             """)
@@ -409,13 +467,43 @@ def list_jobs():
         conn.close()
 
 
+VALID_JOB_STATUSES = ("pending", "scheduled", "confirmed", "completed", "cancelled")
+
+
+@app.delete("/api/jobs")
+def clear_jobs(status: Optional[str] = None):
+    """Clear job submissions (and their scheduled placements, if any) -- for
+    resetting the demo queue. With no `status` query param, clears everything."""
+    if status is not None and status not in VALID_JOB_STATUSES:
+        raise HTTPException(400, f"status must be one of {VALID_JOB_STATUSES}")
+
+    conn = new_conn()
+    try:
+        with conn.cursor() as cur:
+            if status is None:
+                cur.execute("DELETE FROM scheduled_jobs")
+                cur.execute("DELETE FROM job_submissions")
+            else:
+                cur.execute("""
+                    DELETE FROM scheduled_jobs
+                    WHERE job_submission_id IN (SELECT id FROM job_submissions WHERE status = %s)
+                """, (status,))
+                cur.execute("DELETE FROM job_submissions WHERE status = %s", (status,))
+            deleted = cur.rowcount
+        conn.commit()
+    finally:
+        conn.close()
+
+    return {"deleted": deleted}
+
+
 @app.get("/api/schedule")
 def get_schedule():
     conn = new_conn()
     try:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute("""
-                SELECT sj.job_submission_id AS id, js.job_type, sj.data_centre_name,
+                SELECT sj.job_submission_id AS id, js.label, js.job_type, sj.data_centre_name,
                        sj.start_time, sj.end_time, sj.duration_slots,
                        sj.carbon_total_g, sj.cost_total_p, sj.status, sj.scheduled_at
                 FROM scheduled_jobs sj
@@ -446,3 +534,38 @@ def get_grid():
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
+
+
+# Two demo-batch jobs get a schedulable window in the Swagger example, expressed
+# as hours-from-now rather than a fixed date so the example stays usable no
+# matter when /docs happens to be opened. app.openapi is left uncached (no
+# assignment to app.openapi_schema) so this recomputes on every /openapi.json
+# fetch -- i.e. every time the docs page is loaded, not just once at startup.
+_EXAMPLE_WINDOWS_HOURS_FROM_NOW = {
+    "Urgent CPU job — must start ASAP": (0, 1),
+    "Overnight CPU batch — carbon-lean": (8, 16),
+    "Overnight GPU batch — cost-lean": (10, 18),
+}
+
+
+def custom_openapi():
+    schema = get_openapi(title=app.title, version=app.version, routes=app.routes)
+    try:
+        examples = schema["paths"]["/api/jobs/batch"]["post"]["requestBody"]["content"] \
+            ["application/json"]["examples"]
+        example = copy.deepcopy(examples["demo_job_batch"]["value"])
+    except KeyError:
+        return schema
+
+    now = datetime.now(timezone.utc)
+    for job in example:
+        offsets = _EXAMPLE_WINDOWS_HOURS_FROM_NOW.get(job.get("label"))
+        if offsets:
+            start_h, end_h = offsets
+            job["window_start"] = (now + timedelta(hours=start_h)).isoformat()
+            job["window_end"] = (now + timedelta(hours=end_h)).isoformat()
+    examples["demo_job_batch"]["value"] = example
+    return schema
+
+
+app.openapi = custom_openapi

@@ -189,6 +189,7 @@ CREATE TABLE IF NOT EXISTS grid_forecasts (
 CREATE TABLE IF NOT EXISTS job_submissions (
     id             SERIAL PRIMARY KEY,
     submitted_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    label          TEXT,
     job_type       VARCHAR(10) NOT NULL CHECK (job_type IN ('CPU', 'GPU')),
     duration_slots INTEGER NOT NULL CHECK (duration_slots >= 1),
     priority       INTEGER NOT NULL DEFAULT 5,

@@ -12,6 +12,24 @@ SUSTAINABILITY_KPI_PATH = ROOT / "simulator" / "data" / "sustainability_kpis.jso
 DATA_CENTRES_PATH = ROOT / "simulator" / "data" / "data_centres.json"
 GPU_FPGA_PATH = ROOT / "simulator" / "data" / "gpu_fpga_acceleration.json"
 DATASOURCE = {"type": "postgres", "uid": "postgres-ops"}
+# Must mirror scheduler/app.py's DATA_CENTRES available_cpus/available_gpus per
+# data centre -- used to scale the Scheduler dashboard's per-DC CPU/GPU
+# utilisation bar charts to that data centre's full capacity.
+SCHEDULER_DC_CAPACITY = {
+    "Reading":      {"CPU": 1344, "GPU": 448},
+    "Peterborough": {"CPU": 160,  "GPU": 32},
+    "London":       {"CPU": 288,  "GPU": 96},
+    "Edinburgh":    {"CPU": 384,  "GPU": 128},
+}
+# One canonical colour per data centre, shared between the Scheduler dashboard's
+# CPU utilisation bar charts and the Grid Carbon Intensity / Price Forecast line
+# charts, so the same site reads as the same colour across both.
+SCHEDULER_DC_COLOR = {
+    "Reading":      "blue",
+    "Peterborough": "green",
+    "London":       "orange",
+    "Edinburgh":    "purple",
+}
 PLUGIN_VERSION = "11.0.0"
 DATA_CENTRE_VAR = "${data_centre:raw}"
 ROOM_VAR = "${room:raw}"
@@ -437,7 +455,7 @@ def stat_panel(panel_ids, title, sql, unit, x, y, w, h, thresholds=None):
     }
 
 
-def timeseries_panel(panel_ids, title, sql, unit, x, y, w, h):
+def timeseries_panel(panel_ids, title, sql, unit, x, y, w, h, color_overrides=None):
     return {
         "datasource": DATASOURCE,
         "fieldConfig": {
@@ -455,7 +473,13 @@ def timeseries_panel(panel_ids, title, sql, unit, x, y, w, h):
                 "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": None}]},
                 "unit": unit,
             },
-            "overrides": [],
+            "overrides": [
+                {
+                    "matcher": {"id": "byName", "options": series_name},
+                    "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": color}}],
+                }
+                for series_name, color in (color_overrides or {}).items()
+            ],
         },
         "gridPos": {"h": h, "w": w, "x": x, "y": y},
         "id": panel_ids.next(),
@@ -3020,6 +3044,7 @@ def scheduler_dashboard():
             """,
             "none",
             0, 8, 12, 8,
+            color_overrides=SCHEDULER_DC_COLOR,
         ),
         timeseries_panel(
             p,
@@ -3035,6 +3060,7 @@ def scheduler_dashboard():
             """,
             "none",
             12, 8, 12, 8,
+            color_overrides=SCHEDULER_DC_COLOR,
         ),
         *[
             {
@@ -3051,6 +3077,7 @@ def scheduler_dashboard():
                         },
                         "mappings": [],
                         "min": 0,
+                        "max": SCHEDULER_DC_CAPACITY[dc_name][job_type],
                         "unit": "none",
                     },
                     "overrides": [],
@@ -3082,14 +3109,14 @@ def scheduler_dashboard():
                 "type": "timeseries",
             }
             for dc_name, job_type, panel_x, panel_y, color in [
-                ("Reading",      "CPU", 0,  16, "blue"),
-                ("Reading",      "GPU", 6,  16, "light-blue"),
-                ("Peterborough", "CPU", 12, 16, "green"),
-                ("Peterborough", "GPU", 18, 16, "light-green"),
-                ("London",       "CPU", 0,  24, "orange"),
-                ("London",       "GPU", 6,  24, "yellow"),
-                ("Edinburgh",    "CPU", 12, 24, "purple"),
-                ("Edinburgh",    "GPU", 18, 24, "pink"),
+                *[
+                    (dc_name, "CPU", i * 6, 16, dc_color)
+                    for i, (dc_name, dc_color) in enumerate(SCHEDULER_DC_COLOR.items())
+                ],
+                *[
+                    (dc_name, "GPU", i * 6, 24, f"light-{dc_color}")
+                    for i, (dc_name, dc_color) in enumerate(SCHEDULER_DC_COLOR.items())
+                ],
             ]
         ],
         table_panel(
@@ -3098,6 +3125,7 @@ def scheduler_dashboard():
             """
             SELECT
               sj.job_submission_id AS "Job ID",
+              COALESCE(js.label, '') AS "Label",
               js.job_type AS "Type",
               sj.data_centre_name AS "Data Centre",
               sj.start_time AT TIME ZONE 'UTC' AS "Start (UTC)",
@@ -3119,6 +3147,7 @@ def scheduler_dashboard():
             """
             SELECT
               id AS "ID",
+              COALESCE(label, '') AS "Label",
               job_type AS "Type",
               resource_count AS "Units",
               duration_slots AS "Slots",

@@ -465,7 +465,68 @@
           },
           "unit": "none"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Reading"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Peterborough"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "London"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Edinburgh"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "purple"
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -531,7 +592,68 @@
           },
           "unit": "none"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Reading"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Peterborough"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "London"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Edinburgh"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "purple"
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -587,6 +709,7 @@
           },
           "mappings": [],
           "min": 0,
+          "max": 1344,
           "unit": "none"
         },
         "overrides": []
@@ -634,64 +757,6 @@
         "defaults": {
           "color": {
             "mode": "fixed",
-            "fixedColor": "light-blue"
-          },
-          "custom": {
-            "drawStyle": "bars",
-            "fillOpacity": 70,
-            "lineWidth": 1,
-            "showPoints": "never",
-            "spanNulls": false
-          },
-          "mappings": [],
-          "min": 0,
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 5,
-        "x": 9,
-        "y": 16
-      },
-      "id": 10,
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "11.0.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "postgres",
-            "uid": "postgres-ops"
-          },
-          "format": "time_series",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  slots.ts AS time,\n  COALESCE(SUM(j.resource_count), 0)::NUMERIC AS \"Units\"\nFROM (SELECT DISTINCT ts FROM grid_forecasts WHERE $__timeFilter(ts)) slots\nLEFT JOIN (\n  SELECT sj.start_time, sj.end_time, js.resource_count\n  FROM scheduled_jobs sj\n  JOIN job_submissions js ON js.id = sj.job_submission_id\n  WHERE sj.status IN ('scheduled', 'confirmed')\n    AND sj.data_centre_name = 'Reading'\n    AND js.job_type = 'GPU'\n) j ON slots.ts >= j.start_time AND slots.ts < j.end_time\nGROUP BY slots.ts\nORDER BY slots.ts",
-          "refId": "A"
-        }
-      ],
-      "title": "Reading \u2014 GPU",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "postgres",
-        "uid": "postgres-ops"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
             "fixedColor": "green"
           },
           "custom": {
@@ -703,6 +768,7 @@
           },
           "mappings": [],
           "min": 0,
+          "max": 160,
           "unit": "none"
         },
         "overrides": []
@@ -710,10 +776,10 @@
       "gridPos": {
         "h": 8,
         "w": 5,
-        "x": 14,
+        "x": 9,
         "y": 16
       },
-      "id": 11,
+      "id": 10,
       "options": {
         "legend": {
           "displayMode": "list",
@@ -750,64 +816,6 @@
         "defaults": {
           "color": {
             "mode": "fixed",
-            "fixedColor": "light-green"
-          },
-          "custom": {
-            "drawStyle": "bars",
-            "fillOpacity": 70,
-            "lineWidth": 1,
-            "showPoints": "never",
-            "spanNulls": false
-          },
-          "mappings": [],
-          "min": 0,
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 5,
-        "x": 19,
-        "y": 16
-      },
-      "id": 12,
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "11.0.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "postgres",
-            "uid": "postgres-ops"
-          },
-          "format": "time_series",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  slots.ts AS time,\n  COALESCE(SUM(j.resource_count), 0)::NUMERIC AS \"Units\"\nFROM (SELECT DISTINCT ts FROM grid_forecasts WHERE $__timeFilter(ts)) slots\nLEFT JOIN (\n  SELECT sj.start_time, sj.end_time, js.resource_count\n  FROM scheduled_jobs sj\n  JOIN job_submissions js ON js.id = sj.job_submission_id\n  WHERE sj.status IN ('scheduled', 'confirmed')\n    AND sj.data_centre_name = 'Peterborough'\n    AND js.job_type = 'GPU'\n) j ON slots.ts >= j.start_time AND slots.ts < j.end_time\nGROUP BY slots.ts\nORDER BY slots.ts",
-          "refId": "A"
-        }
-      ],
-      "title": "Peterborough \u2014 GPU",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "postgres",
-        "uid": "postgres-ops"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
             "fixedColor": "orange"
           },
           "custom": {
@@ -819,6 +827,7 @@
           },
           "mappings": [],
           "min": 0,
+          "max": 288,
           "unit": "none"
         },
         "overrides": []
@@ -826,10 +835,10 @@
       "gridPos": {
         "h": 8,
         "w": 5,
-        "x": 4,
-        "y": 24
+        "x": 14,
+        "y": 16
       },
-      "id": 13,
+      "id": 11,
       "options": {
         "legend": {
           "displayMode": "list",
@@ -866,64 +875,6 @@
         "defaults": {
           "color": {
             "mode": "fixed",
-            "fixedColor": "yellow"
-          },
-          "custom": {
-            "drawStyle": "bars",
-            "fillOpacity": 70,
-            "lineWidth": 1,
-            "showPoints": "never",
-            "spanNulls": false
-          },
-          "mappings": [],
-          "min": 0,
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 5,
-        "x": 9,
-        "y": 24
-      },
-      "id": 14,
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "11.0.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "postgres",
-            "uid": "postgres-ops"
-          },
-          "format": "time_series",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  slots.ts AS time,\n  COALESCE(SUM(j.resource_count), 0)::NUMERIC AS \"Units\"\nFROM (SELECT DISTINCT ts FROM grid_forecasts WHERE $__timeFilter(ts)) slots\nLEFT JOIN (\n  SELECT sj.start_time, sj.end_time, js.resource_count\n  FROM scheduled_jobs sj\n  JOIN job_submissions js ON js.id = sj.job_submission_id\n  WHERE sj.status IN ('scheduled', 'confirmed')\n    AND sj.data_centre_name = 'London'\n    AND js.job_type = 'GPU'\n) j ON slots.ts >= j.start_time AND slots.ts < j.end_time\nGROUP BY slots.ts\nORDER BY slots.ts",
-          "refId": "A"
-        }
-      ],
-      "title": "London \u2014 GPU",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "postgres",
-        "uid": "postgres-ops"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
             "fixedColor": "purple"
           },
           "custom": {
@@ -935,6 +886,7 @@
           },
           "mappings": [],
           "min": 0,
+          "max": 384,
           "unit": "none"
         },
         "overrides": []
@@ -942,10 +894,10 @@
       "gridPos": {
         "h": 8,
         "w": 5,
-        "x": 14,
-        "y": 24
+        "x": 19,
+        "y": 16
       },
-      "id": 15,
+      "id": 12,
       "options": {
         "legend": {
           "displayMode": "list",
@@ -982,7 +934,7 @@
         "defaults": {
           "color": {
             "mode": "fixed",
-            "fixedColor": "pink"
+            "fixedColor": "light-blue"
           },
           "custom": {
             "drawStyle": "bars",
@@ -993,6 +945,184 @@
           },
           "mappings": [],
           "min": 0,
+          "max": 448,
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 5,
+        "x": 4,
+        "y": 24
+      },
+      "id": 13,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  slots.ts AS time,\n  COALESCE(SUM(j.resource_count), 0)::NUMERIC AS \"Units\"\nFROM (SELECT DISTINCT ts FROM grid_forecasts WHERE $__timeFilter(ts)) slots\nLEFT JOIN (\n  SELECT sj.start_time, sj.end_time, js.resource_count\n  FROM scheduled_jobs sj\n  JOIN job_submissions js ON js.id = sj.job_submission_id\n  WHERE sj.status IN ('scheduled', 'confirmed')\n    AND sj.data_centre_name = 'Reading'\n    AND js.job_type = 'GPU'\n) j ON slots.ts >= j.start_time AND slots.ts < j.end_time\nGROUP BY slots.ts\nORDER BY slots.ts",
+          "refId": "A"
+        }
+      ],
+      "title": "Reading \u2014 GPU",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "light-green"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 70,
+            "lineWidth": 1,
+            "showPoints": "never",
+            "spanNulls": false
+          },
+          "mappings": [],
+          "min": 0,
+          "max": 32,
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 5,
+        "x": 9,
+        "y": 24
+      },
+      "id": 14,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  slots.ts AS time,\n  COALESCE(SUM(j.resource_count), 0)::NUMERIC AS \"Units\"\nFROM (SELECT DISTINCT ts FROM grid_forecasts WHERE $__timeFilter(ts)) slots\nLEFT JOIN (\n  SELECT sj.start_time, sj.end_time, js.resource_count\n  FROM scheduled_jobs sj\n  JOIN job_submissions js ON js.id = sj.job_submission_id\n  WHERE sj.status IN ('scheduled', 'confirmed')\n    AND sj.data_centre_name = 'Peterborough'\n    AND js.job_type = 'GPU'\n) j ON slots.ts >= j.start_time AND slots.ts < j.end_time\nGROUP BY slots.ts\nORDER BY slots.ts",
+          "refId": "A"
+        }
+      ],
+      "title": "Peterborough \u2014 GPU",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "light-orange"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 70,
+            "lineWidth": 1,
+            "showPoints": "never",
+            "spanNulls": false
+          },
+          "mappings": [],
+          "min": 0,
+          "max": 96,
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 5,
+        "x": 14,
+        "y": 24
+      },
+      "id": 15,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-ops"
+          },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  slots.ts AS time,\n  COALESCE(SUM(j.resource_count), 0)::NUMERIC AS \"Units\"\nFROM (SELECT DISTINCT ts FROM grid_forecasts WHERE $__timeFilter(ts)) slots\nLEFT JOIN (\n  SELECT sj.start_time, sj.end_time, js.resource_count\n  FROM scheduled_jobs sj\n  JOIN job_submissions js ON js.id = sj.job_submission_id\n  WHERE sj.status IN ('scheduled', 'confirmed')\n    AND sj.data_centre_name = 'London'\n    AND js.job_type = 'GPU'\n) j ON slots.ts >= j.start_time AND slots.ts < j.end_time\nGROUP BY slots.ts\nORDER BY slots.ts",
+          "refId": "A"
+        }
+      ],
+      "title": "London \u2014 GPU",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-ops"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "light-purple"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 70,
+            "lineWidth": 1,
+            "showPoints": "never",
+            "spanNulls": false
+          },
+          "mappings": [],
+          "min": 0,
+          "max": 128,
           "unit": "none"
         },
         "overrides": []
@@ -1063,7 +1193,7 @@
           },
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n  sj.job_submission_id AS \"Job ID\",\n  js.job_type AS \"Type\",\n  sj.data_centre_name AS \"Data Centre\",\n  sj.start_time AT TIME ZONE 'UTC' AS \"Start (UTC)\",\n  sj.end_time AT TIME ZONE 'UTC' AS \"End (UTC)\",\n  sj.duration_slots AS \"Slots\",\n  sj.carbon_total_g AS \"CI Score\",\n  ROUND(sj.cost_total_p::NUMERIC, 1) AS \"Cost Score\",\n  sj.status AS \"Status\"\nFROM scheduled_jobs sj\nJOIN job_submissions js ON js.id = sj.job_submission_id\nWHERE sj.status IN ('scheduled', 'confirmed')\nORDER BY sj.start_time",
+          "rawSql": "SELECT\n  sj.job_submission_id AS \"Job ID\",\n  COALESCE(js.label, '') AS \"Label\",\n  js.job_type AS \"Type\",\n  sj.data_centre_name AS \"Data Centre\",\n  sj.start_time AT TIME ZONE 'UTC' AS \"Start (UTC)\",\n  sj.end_time AT TIME ZONE 'UTC' AS \"End (UTC)\",\n  sj.duration_slots AS \"Slots\",\n  sj.carbon_total_g AS \"CI Score\",\n  ROUND(sj.cost_total_p::NUMERIC, 1) AS \"Cost Score\",\n  sj.status AS \"Status\"\nFROM scheduled_jobs sj\nJOIN job_submissions js ON js.id = sj.job_submission_id\nWHERE sj.status IN ('scheduled', 'confirmed')\nORDER BY sj.start_time",
           "refId": "A"
         }
       ],
@@ -1102,7 +1232,7 @@
           },
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n  id AS \"ID\",\n  job_type AS \"Type\",\n  resource_count AS \"Units\",\n  duration_slots AS \"Slots\",\n  priority AS \"Priority\",\n  ROUND(carbon_weight::NUMERIC, 1) AS \"Carbon Weight\",\n  ROUND(cost_weight::NUMERIC, 1) AS \"Cost Weight\",\n  submitted_at AT TIME ZONE 'UTC' AS \"Submitted (UTC)\",\n  status AS \"Status\"\nFROM job_submissions\nWHERE status NOT IN ('completed', 'cancelled')\nORDER BY submitted_at DESC\nLIMIT 50",
+          "rawSql": "SELECT\n  id AS \"ID\",\n  COALESCE(label, '') AS \"Label\",\n  job_type AS \"Type\",\n  resource_count AS \"Units\",\n  duration_slots AS \"Slots\",\n  priority AS \"Priority\",\n  ROUND(carbon_weight::NUMERIC, 1) AS \"Carbon Weight\",\n  ROUND(cost_weight::NUMERIC, 1) AS \"Cost Weight\",\n  submitted_at AT TIME ZONE 'UTC' AS \"Submitted (UTC)\",\n  status AS \"Status\"\nFROM job_submissions\nWHERE status NOT IN ('completed', 'cancelled')\nORDER BY submitted_at DESC\nLIMIT 50",
           "refId": "A"
         }
       ],
